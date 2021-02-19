@@ -1,14 +1,13 @@
 package com.qa.ims.persistence.dao;
 
+import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemDAO implements Dao<Item> {
@@ -16,7 +15,19 @@ public class ItemDAO implements Dao<Item> {
 
     @Override
     public List<Item> readAll() {
-        return null;
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM item");) {
+            List<Item> items = new ArrayList<>();
+            while (resultSet.next()) {
+                items.add(modelFromResultSet(resultSet));
+            }
+            return items;
+        } catch (SQLException e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
+        return new ArrayList<>();
     }
 
     @Override
