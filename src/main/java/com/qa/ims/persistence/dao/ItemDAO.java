@@ -17,7 +17,7 @@ public class ItemDAO implements Dao<Item> {
     public List<Item> readAll() {
         try (Connection connection = DBUtils.getInstance().getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM item");) {
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM item")) {
             List<Item> items = new ArrayList<>();
             while (resultSet.next()) {
                 items.add(modelFromResultSet(resultSet));
@@ -69,7 +69,17 @@ public class ItemDAO implements Dao<Item> {
         return new Item(id, name, price);
     }
 
+    //TODO: code duplication with CustomerDAO here. find better solution in final pass time allowing
     public Item readLatest() {
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM item ORDER BY iditem DESC LIMIT 1")) {
+            resultSet.next();
+            return modelFromResultSet(resultSet);
+        } catch (Exception e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
         return null;
     }
 }
