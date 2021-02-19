@@ -51,8 +51,11 @@ public class ItemDAO implements Dao<Item> {
     }
 
     @Override
-    public Item modelFromResultSet(ResultSet resultSet) throws SQLException {
-        return null;
+    public Item modelFromResultSet(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("id");
+        String name = rs.getString("name");
+        double price = rs.getDouble("price");
+        return new Item(id, name, price);
     }
 
     public Item readLatest() {
