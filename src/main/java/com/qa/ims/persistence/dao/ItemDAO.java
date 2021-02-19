@@ -29,8 +29,20 @@ public class ItemDAO implements Dao<Item> {
         return new ArrayList<>();
     }
 
+    //TODO implement "ItemNotFoundException" for when there is no item with that name
     @Override
     public Item read(Long id) {
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM item WHERE iditem = ?")) {
+            statement.setLong(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                rs.next();
+                return modelFromResultSet(rs);
+            }
+        } catch (Exception e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
         return null;
     }
 
