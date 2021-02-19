@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-public class ItemController implements CrudController<Item>{
+public class ItemController implements CrudController<Item> {
 
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -38,16 +38,25 @@ public class ItemController implements CrudController<Item>{
     public Item create() {
         LOGGER.info("Please enter an item name");
         String name = utils.getString();
-        LOGGER.info("Please enter the price for "+name);
+        LOGGER.info("Please enter the price for " + name);
         double price = utils.getDouble();
         Item item = itemDAO.create(new Item(name, price));
         LOGGER.info("item created");
         return item;
     }
 
+    //TODO change single values rather than whole item. Potentially read item and ask what to update?
     @Override
     public Item update() {
-        return null;
+        LOGGER.info("Please enter the id of the item you would like to update");
+        Long id = utils.getLong();
+        LOGGER.info("Please enter a new name");
+        String name = utils.getString();
+        LOGGER.info("Please enter a new price");
+        double price = utils.getDouble();
+        Item item = itemDAO.update(new Item(id, name, price));
+        LOGGER.info("Item Updated");
+        return item;
     }
 
     @Override
