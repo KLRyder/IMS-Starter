@@ -31,7 +31,7 @@ public class ItemController implements CrudController<Item>{
                 items) {
             LOGGER.info(i);
         }
-        return null;
+        return items;
     }
 
     @Override
