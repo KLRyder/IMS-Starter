@@ -1,6 +1,5 @@
 package com.qa.ims.persistence.dao;
 
-import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
@@ -53,6 +52,18 @@ public class ItemDAO implements Dao<Item> {
 
     @Override
     public Item update(Item item) {
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             PreparedStatement statement = connection
+                     .prepareStatement("UPDATE item SET name = ?, price = ? WHERE iditem = ?")) {
+            statement.setString(1, item.getName());
+            statement.setDouble(2, item.getPrice());
+            statement.setLong(3, item.getId());
+            statement.executeUpdate();
+            return read(item.getId());
+        } catch (Exception e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
         return null;
     }
 
