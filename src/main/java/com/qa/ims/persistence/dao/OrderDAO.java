@@ -1,5 +1,6 @@
 package com.qa.ims.persistence.dao;
 
+import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Order;
 
 import java.sql.ResultSet;
@@ -34,6 +35,10 @@ public class OrderDAO implements Dao<Order>{
 
     @Override
     public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
+        return null;
+    }
+
+    public Order readLatest() {
         return null;
     }
 }
