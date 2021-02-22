@@ -1,8 +1,6 @@
 package com.qa.ims.persistence.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 public class Order implements Comparable<Order> {
     private Long id;
@@ -22,7 +20,21 @@ public class Order implements Comparable<Order> {
 
     @Override
     public String toString() {
-        return null;
+
+        StringBuilder s = new StringBuilder();
+
+        s.append("Info for Order ID ").append(id).append(":\n    Customer:\n        ").append(customer)
+                .append("\n    Items:\n");
+
+        Set<Item> tempItems = new HashSet<>(items);
+        for (Item item : tempItems) {
+            s.append("        Item ID: ").append(item.getId()).append(" Item name: ").append(item.getName())
+                    .append(" Price: ").append(item.getPrice()).append(" Quantity: ")
+                    .append(items.stream().filter(item::equals).count()).append("\n");
+        }
+
+        s.append("    Total Price: ").append(getTotalCost());
+        return s.toString();
     }
 
     @Override
@@ -62,6 +74,14 @@ public class Order implements Comparable<Order> {
 
     public void setItems(ArrayList<Item> items) {
         this.items = items;
+    }
+
+    public double getTotalCost() {
+        double acc = 0;
+        for (Item item : items) {
+            acc += item.getPrice();
+        }
+        return acc;
     }
 
     @Override
