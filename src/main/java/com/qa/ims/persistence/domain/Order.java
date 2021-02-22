@@ -3,7 +3,7 @@ package com.qa.ims.persistence.domain;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Order {
+public class Order implements Comparable<Order> {
     private Long id;
     private Customer customer;
     private ArrayList<Item> items;
@@ -60,5 +60,16 @@ public class Order {
 
     public void setItems(ArrayList<Item> items) {
         this.items = items;
+    }
+
+    @Override
+    public int compareTo(Order o) {
+        if (id < o.id) {
+            return -1;
+        } else if (id.equals(o.id)) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }
