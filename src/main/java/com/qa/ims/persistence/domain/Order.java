@@ -50,6 +50,19 @@ public class Order implements Comparable<Order> {
         return Objects.hash(id, customer, items);
     }
 
+    public void addItem(Item item){
+        //find index to insert item via binarySearch in order to retain order in items list.
+        int i = Collections.binarySearch(items,item);
+        if(i<0){
+            i=~i;
+        }
+        items.add(i,item);
+    }
+
+    public boolean removeItem(Item item){
+        return items.remove(item);
+    }
+
     // Getters and setters
 
     public Long getId() {
