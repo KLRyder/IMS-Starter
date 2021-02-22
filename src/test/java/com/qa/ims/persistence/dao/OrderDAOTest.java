@@ -67,8 +67,11 @@ public class OrderDAOTest {
 
     @Test
     public void testUpdate() {
-        Item[] items = {new Item(2L, "item", 22.26), new Item(1L, "test_item", 22.22), new Item("test_item", 22.22)};
-        final Order Updated = new Order(1L, new Customer("bob", "bobson"), new ArrayList<>(Arrays.asList(items)));
+        Item[] items = {new Item(2L, "item", 22.26), new Item(1L, "test_item", 22.22),
+                new Item(1L, "test_item", 22.22)};
+        final Order updated = new Order(1L, new Customer(2L, "bob", "bobson"),
+                new ArrayList<>(Arrays.asList(items)));
+        assertEquals(updated, DAO.update(updated));
     }
 
     @Test
