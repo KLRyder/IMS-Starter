@@ -23,25 +23,51 @@ public class OrderDAOTest {
 
     @Test
     public void testCreate() {
-
+        final long ID = 1L;
+        final Item item = new Item(ID, "test_item", 22.22);
+        final ArrayList<Item> itemList = new ArrayList<>();
+        itemList.add(item);
+        final Customer customer = new Customer(1L, "jordan", "harrison");
+        ArrayList<Order> orders = new ArrayList<>();
+        final Order order = new Order(2L, customer, itemList);
+        assertEquals(order, DAO.create(order));
     }
 
     @Test
     public void testReadAll() {
+        final long ID = 1L;
+        final Item item = new Item(ID, "test_item", 22.22);
+        final ArrayList<Item> itemList = new ArrayList<>();
+        itemList.add(item);
+        final Customer customer = new Customer(1L, "jordan", "harrison");
+        ArrayList<Order> orders = new ArrayList<>();
+        orders.add(new Order(ID, customer, itemList));
+        assertEquals(orders, DAO.readAll());
     }
 
     @Test
     public void testReadLatest() {
-
+        final long ID = 1L;
+        final Item item = new Item(ID, "test_item", 22.22);
+        final ArrayList<Item> itemList = new ArrayList<>();
+        itemList.add(item);
+        final Customer customer = new Customer(1L, "jordan", "harrison");
+        assertEquals(new Order(ID, customer, itemList), DAO.readLatest());
     }
 
     @Test
     public void testRead() {
+        final long ID = 1L;
+        final Item item = new Item(ID, "test_item", 22.22);
+        final ArrayList<Item> itemList = new ArrayList<>();
+        itemList.add(item);
+        final Customer customer = new Customer(1L, "jordan", "harrison");
+        assertEquals(new Order(ID, customer, itemList), DAO.read(ID));
     }
 
     @Test
     public void testUpdate() {
-        Item[] items = {new Item(2L,"item",22.26),new Item(1L,"test_item", 22.22),new Item("test_item", 22.22)};
+        Item[] items = {new Item(2L, "item", 22.26), new Item(1L, "test_item", 22.22), new Item("test_item", 22.22)};
         final Order Updated = new Order(1L, new Customer("bob", "bobson"), new ArrayList<>(Arrays.asList(items)));
     }
 

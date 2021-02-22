@@ -1,6 +1,7 @@
 package com.qa.ims.persistence.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 public class Order implements Comparable<Order> {
@@ -10,6 +11,7 @@ public class Order implements Comparable<Order> {
 
     public Order(Customer customer, ArrayList<Item> items) {
         setCustomer(customer);
+        Collections.sort(items);
         setItems(items);
     }
 
