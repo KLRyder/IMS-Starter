@@ -16,3 +16,12 @@ CREATE TABLE IF NOT EXISTS `item`
     `price`  DOUBLE      NOT NULL,
     PRIMARY KEY (`iditem`)
 );
+
+DROP TABLE IF EXISTS `order`;
+
+CREATE TABLE `order`
+(
+    `idorder` INT NOT NULL AUTO_INCREMENT,
+    `custid`  INT NULL,
+    PRIMARY KEY (`idorder`)
+);
