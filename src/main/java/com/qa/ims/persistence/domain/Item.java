@@ -2,7 +2,7 @@ package com.qa.ims.persistence.domain;
 
 import java.util.Objects;
 
-public class Item {
+public class Item implements Comparable<Item>{
 
     private Long id;
     private String name;
@@ -60,5 +60,16 @@ public class Item {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    @Override
+    public int compareTo(Item o) {
+        if (id < o.id) {
+            return -1;
+        } else if (id.equals(o.id)) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }
