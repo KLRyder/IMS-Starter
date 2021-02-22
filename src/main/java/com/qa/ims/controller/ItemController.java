@@ -59,8 +59,11 @@ public class ItemController implements CrudController<Item> {
         return item;
     }
 
+    //TODO make the user confirm that they wish to delete the item. Potentaly read item to confirm first?
     @Override
     public int delete() {
-        return 0;
+        LOGGER.info("Please enter tje id  of the item you want to delete");
+        Long id = utils.getLong();
+        return itemDAO.delete(id);
     }
 }
