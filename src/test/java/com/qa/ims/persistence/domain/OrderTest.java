@@ -42,4 +42,19 @@ public class OrderTest {
 
         assertEquals(ordersUnsorted, orders);
     }
+
+    @Test
+    public void testTotalPrice(){
+        Item i1 = new Item(1L, "itm", 11.11);
+        Item i2 = new Item(2L, "item", 22.22);
+        Item i3 = new Item(3L, "test_item", 33.33);
+
+        ArrayList<Item>items = new ArrayList<>();
+        items.add(i1);
+        items.add(i2);
+        items.add(i3);
+        Order testOrder = new Order(new Customer("bob","bobson"), items);
+
+        assertEquals(66.66,testOrder.getTotalCost());
+    }
 }
