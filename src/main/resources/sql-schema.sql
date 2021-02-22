@@ -12,9 +12,7 @@ CREATE TABLE IF NOT EXISTS `ims`.`customers`
     PRIMARY KEY (`id`)
 );
 
-DROP TABLE IF EXISTS `item`;
-
-CREATE TABLE IF NOT EXISTS `item`
+CREATE TABLE IF NOT EXISTS `ims`.`item`
 (
     `iditem` INT         NOT NULL AUTO_INCREMENT,
     `name`   VARCHAR(45) NOT NULL,
@@ -22,11 +20,18 @@ CREATE TABLE IF NOT EXISTS `item`
     PRIMARY KEY (`iditem`)
 );
 
-DROP TABLE IF EXISTS `order`;
-
-CREATE TABLE `order`
+CREATE TABLE `ims`.`order`
 (
     `idorder` INT NOT NULL AUTO_INCREMENT,
-    `custid`  INT NULL,
+    `custid`  INT NOT NULL,
     PRIMARY KEY (`idorder`)
+);
+
+CREATE TABLE `ims`.`order_link`
+(
+    `idorder_link` INT NOT NULL AUTO_INCREMENT,
+    `orderid`      INT NOT NULL,
+    `itemid`       INT NOT NULL,
+    `quantity`     INT NOT NULL,
+    PRIMARY KEY (`idorder_link`)
 );

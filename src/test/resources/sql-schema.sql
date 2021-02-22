@@ -22,6 +22,17 @@ DROP TABLE IF EXISTS `order`;
 CREATE TABLE `order`
 (
     `idorder` INT NOT NULL AUTO_INCREMENT,
-    `custid`  INT NULL,
+    `custid`  INT NOT NULL,
     PRIMARY KEY (`idorder`)
+);
+
+DROP TABLE IF EXISTS `order_link`;
+
+CREATE TABLE `order_link`
+(
+    `idorder_link` INT NOT NULL AUTO_INCREMENT,
+    `orderid`      INT NOT NULL,
+    `itemid`       INT NOT NULL,
+    `quantity`     INT NOT NULL,
+    PRIMARY KEY (`idorder_link`)
 );
