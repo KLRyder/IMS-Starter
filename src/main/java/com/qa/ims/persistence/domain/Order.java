@@ -5,15 +5,14 @@ import java.util.*;
 public class Order implements Comparable<Order> {
     private Long id;
     private Customer customer;
-    private ArrayList<Item> items;
+    private Map<Item, Integer> items;
 
-    public Order(Customer customer, ArrayList<Item> items) {
+    public Order(Customer customer, Map<Item, Integer> items) {
         setCustomer(customer);
-        Collections.sort(items);
         setItems(items);
     }
 
-    public Order(Long id, Customer customer, ArrayList<Item> items) {
+    public Order(Long id, Customer customer, Map<Item, Integer> items) {
         this(customer, items);
         this.setId(id);
     }
@@ -26,11 +25,11 @@ public class Order implements Comparable<Order> {
         s.append("Info for Order ID ").append(id).append(":\n    Customer:\n        ").append(customer)
                 .append("\n    Items:\n");
 
-        Set<Item> tempItems = new HashSet<>(items);
-        for (Item item : tempItems) {
+        Map<Item, Integer> tempItems = new HashMap<>(items);
+        for (Item item : tempItems.keySet()) {
             s.append("        Item ID: ").append(item.getId()).append(" Item name: ").append(item.getName())
                     .append(" Price: ").append(item.getPrice()).append(" Quantity: ")
-                    .append(items.stream().filter(item::equals).count()).append("\n");
+                    .append(tempItems.get(item)).append("\n");
         }
 
         s.append("    Total Price: ").append(getTotalCost());
@@ -50,17 +49,50 @@ public class Order implements Comparable<Order> {
         return Objects.hash(id, customer, items);
     }
 
-    public void addItem(Item item){
-        //find index to insert item via binarySearch in order to retain order in items list.
-        int i = Collections.binarySearch(items,item);
-        if(i<0){
-            i=~i;
-        }
-        items.add(i,item);
+    public void addItem(Item item, Integer quantity) {
+        items.put(item, items.getOrDefault(item, 0) + quantity);
     }
 
-    public boolean removeItem(Item item){
-        return items.remove(item);
+    public void addItem(Item item) {
+        addItem(item, 1);
+    }
+
+    public boolean removeItem(Item item) {
+        return removeItem(item, 1);
+    }
+
+    public boolean removeItem(Item item, Integer quantity) {
+        if (!items.containsKey(item)) {
+            return false;
+        }
+
+        Integer currQuant = items.get(item);
+        if (currQuant <= quantity) {
+            items.remove(item);
+        } else {
+            items.put(item, currQuant - quantity);
+        }
+        return true;
+    }
+
+    public boolean removeItem(Long itemID, Integer quantity) {
+        Item itemToRemove = null;
+        for (Item i : items.keySet()) {
+            if (i.getId().equals(itemID)) {
+                itemToRemove = i;
+                break;
+            }
+        }
+
+        if (itemToRemove == null) {
+            return false;
+        }
+
+        return removeItem(itemToRemove, quantity);
+    }
+
+    public boolean removeItem(Long itemID) {
+        return removeItem(itemID, 1);
     }
 
     // Getters and setters
@@ -81,18 +113,18 @@ public class Order implements Comparable<Order> {
         this.customer = customer;
     }
 
-    public ArrayList<Item> getItems() {
+    public Map<Item, Integer> getItems() {
         return items;
     }
 
-    public void setItems(ArrayList<Item> items) {
+    public void setItems(Map<Item, Integer> items) {
         this.items = items;
     }
 
     public double getTotalCost() {
         double acc = 0;
-        for (Item item : items) {
-            acc += item.getPrice();
+        for (Item item : items.keySet()) {
+            acc += item.getPrice() * items.get(item);
         }
         return acc;
     }
