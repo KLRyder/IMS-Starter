@@ -6,18 +6,32 @@ import com.qa.ims.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDAO implements Dao<Order> {
     public static final Logger LOGGER = LogManager.getLogger();
+    private ItemDAO itemDAO = new ItemDAO();
+    private CustomerDAO customerDAO = new CustomerDAO();
 
     @Override
     public List<Order> readAll() {
-        return null;
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM `order`")) {
+            List<Order> orders = new ArrayList<>();
+            while (resultSet.next()) {
+                orders.add(modelFromResultSet(resultSet));
+            }
+            return orders;
+        } catch (SQLException e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
+        return new ArrayList<>();
     }
 
     @Override
@@ -78,7 +92,26 @@ public class OrderDAO implements Dao<Order> {
     }
 
     @Override
-    public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
+    public Order modelFromResultSet(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("idorder");
+        Long custId = rs.getLong("custid");
+
+        return new Order(id, customerDAO.read(custId), readItemsFromOrder(id));
+    }
+
+    public Map<Item, Integer> readItemsFromOrder(Long orderId) {
+        Map<Item, Integer> items = new HashMap<>();
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery("SELECT * FROM `order_link` WHERE orderid = " + orderId)) {
+            while (rs.next()) {
+                items.put(itemDAO.read(rs.getLong("itemid")), rs.getInt("quantity"));
+            }
+            return items;
+        } catch (SQLException e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
         return null;
     }
 

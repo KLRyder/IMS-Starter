@@ -32,7 +32,11 @@ public class OrderController implements CrudController<Order> {
 
     @Override
     public List<Order> readAll() {
-        return null;
+        List<Order> orders = orderDAO.readAll();
+        for (Order o : orders) {
+            LOGGER.info(o);
+        }
+        return orders;
     }
 
     @Override
@@ -42,25 +46,14 @@ public class OrderController implements CrudController<Order> {
         Customer c;
         try {
             c = customerDAO.read(custid);
-            Order order = orderDAO.create(new Order(c,new HashMap<>()));
+            Order order = orderDAO.create(new Order(c, new HashMap<>()));
             LOGGER.info("Order created");
             return order;
-        }catch (CustomerNotFoundException e){
-            LOGGER.info("Customer with id "+ custid +"not found");
+        } catch (CustomerNotFoundException e) {
+            LOGGER.info("Customer with id " + custid + "not found");
             return null;
         }
     }
-
-//    @Override
-//    public Item create() {
-//        LOGGER.info("Please enter an item name");
-//        String name = utils.getString();
-//        LOGGER.info("Please enter the price for " + name);
-//        double price = utils.getDouble();
-//        Item item = itemDAO.create(new Item(name, price));
-//        LOGGER.info("item created");
-//        return item;
-//    }
 
     @Override
     public Order update() {
