@@ -35,6 +35,7 @@ public class OrderDAO implements Dao<Order> {
             // get index of the next order to insert. needed for orderlink creation se we cant rely on the
             // tables auto increment
             ResultSet rs = connection.createStatement().executeQuery("SELECT MAX(idorder) FROM `order`");
+            rs.next();
             int index = rs.getInt("MAX(idorder)") + 1;
 
             //create order in order table
@@ -43,6 +44,8 @@ public class OrderDAO implements Dao<Order> {
             statement.setLong(1, index);
             statement.setLong(2, order.getCustomer().getId());
 
+            statement.execute();
+
             //create orderLink in order_link table for each attached item(if any)
             for (Item item : order.getItems().keySet()) {
                 statement = connection.prepareStatement(
@@ -50,6 +53,7 @@ public class OrderDAO implements Dao<Order> {
                 statement.setLong(1, index);
                 statement.setLong(2, item.getId());
                 statement.setInt(3, order.getItems().get(item));
+                statement.execute();
             }
 
             connection.commit();

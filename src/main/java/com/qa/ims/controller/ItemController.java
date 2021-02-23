@@ -1,8 +1,6 @@
 package com.qa.ims.controller;
 
-import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.dao.ItemDAO;
-import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.Utils;
 import org.apache.logging.log4j.LogManager;
