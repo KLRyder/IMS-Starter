@@ -21,18 +21,24 @@ DROP TABLE IF EXISTS `order`;
 
 CREATE TABLE `order`
 (
-    `idorder` INT NOT NULL AUTO_INCREMENT,
-    `custid`  INT NOT NULL,
-    PRIMARY KEY (`idorder`)
+    `idorder` int NOT NULL AUTO_INCREMENT,
+    `custid`  int NOT NULL,
+    PRIMARY KEY (`idorder`),
+    KEY `custid_idx` (`custid`),
+    CONSTRAINT `custid` FOREIGN KEY (`custid`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS `order_link`;
 
 CREATE TABLE `order_link`
 (
-    `idorder_link` INT NOT NULL AUTO_INCREMENT,
-    `orderid`      INT NOT NULL,
-    `itemid`       INT NOT NULL,
-    `quantity`     INT NOT NULL,
-    PRIMARY KEY (`idorder_link`)
+    `idorder_link` int NOT NULL AUTO_INCREMENT,
+    `orderid`      int NOT NULL,
+    `itemid`       int NOT NULL,
+    `quantity`     int NOT NULL,
+    PRIMARY KEY (`idorder_link`),
+    KEY `orderid_idx` (`orderid`),
+    KEY `itemid_idx` (`itemid`),
+    CONSTRAINT `itemid` FOREIGN KEY (`itemid`) REFERENCES `item` (`iditem`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `orderid` FOREIGN KEY (`orderid`) REFERENCES `order` (`idorder`) ON DELETE CASCADE ON UPDATE CASCADE
 );
