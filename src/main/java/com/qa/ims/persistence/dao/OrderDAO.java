@@ -6,10 +6,8 @@ import com.qa.ims.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDAO implements Dao<Order> {
@@ -17,7 +15,19 @@ public class OrderDAO implements Dao<Order> {
 
     @Override
     public List<Order> readAll() {
-        return null;
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM `order`")) {
+            List<Order> orders = new ArrayList<>();
+            while (resultSet.next()) {
+                orders.add(modelFromResultSet(resultSet));
+            }
+            return orders;
+        } catch (SQLException e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
+        return new ArrayList<>();
     }
 
     @Override
