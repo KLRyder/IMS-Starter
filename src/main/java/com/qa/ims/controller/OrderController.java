@@ -18,10 +18,10 @@ public class OrderController implements CrudController<Order> {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
-    private CustomerDAO customerDAO;
-    private OrderDAO orderDAO;
-    private ItemDAO itemDAO;
-    private Utils utils;
+    private final CustomerDAO customerDAO;
+    private final OrderDAO orderDAO;
+    private final ItemDAO itemDAO;
+    private final Utils utils;
 
     public OrderController(CustomerDAO customerDAO, OrderDAO orderDAO, ItemDAO itemDAO, Utils utils) {
         this.customerDAO = customerDAO;

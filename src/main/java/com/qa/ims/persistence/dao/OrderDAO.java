@@ -36,6 +36,17 @@ public class OrderDAO implements Dao<Order> {
 
     @Override
     public Order read(Long id) {
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM `order` WHERE idorder = ?")) {
+            statement.setLong(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                rs.next();
+                return modelFromResultSet(rs);
+            }
+        } catch (Exception e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
         return null;
     }
 
