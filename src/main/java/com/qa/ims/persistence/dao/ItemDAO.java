@@ -69,7 +69,7 @@ public class ItemDAO implements Dao<Item> {
     }
 
     @Override
-    public Item update(Item item) {
+    public Item update(Item item) throws ItemNotFoundException{
         try (Connection connection = DBUtils.getInstance().getConnection();
              PreparedStatement statement = connection
                      .prepareStatement("UPDATE item SET name = ?, price = ? WHERE iditem = ?")) {
