@@ -52,7 +52,7 @@ public class OrderController implements CrudController<Order> {
             LOGGER.info("Order created");
             return order;
         } catch (CustomerNotFoundException e) {
-            LOGGER.info("Customer with id " + custid + "not found");
+            LOGGER.info("Customer with id " + custid + " not found");
             return null;
         }
     }

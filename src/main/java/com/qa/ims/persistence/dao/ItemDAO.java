@@ -1,11 +1,16 @@
 package com.qa.ims.persistence.dao;
 
+import com.qa.ims.exceptions.ItemNotFoundException;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +34,18 @@ public class ItemDAO implements Dao<Item> {
         return new ArrayList<>();
     }
 
-    //TODO implement "ItemNotFoundException" for when there is no item with that name
     @Override
-    public Item read(Long id) {
+    public Item read(Long id) throws ItemNotFoundException{
         try (Connection connection = DBUtils.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM item WHERE iditem = ?")) {
             statement.setLong(1, id);
             try (ResultSet rs = statement.executeQuery()) {
-                rs.next();
+                if(!rs.next()){
+                    throw new ItemNotFoundException();
+                }
                 return modelFromResultSet(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
         }
@@ -55,7 +61,7 @@ public class ItemDAO implements Dao<Item> {
             statement.setDouble(2, item.getPrice());
             statement.executeUpdate();
             return readLatest();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
         }
@@ -63,7 +69,7 @@ public class ItemDAO implements Dao<Item> {
     }
 
     @Override
-    public Item update(Item item) {
+    public Item update(Item item) throws ItemNotFoundException{
         try (Connection connection = DBUtils.getInstance().getConnection();
              PreparedStatement statement = connection
                      .prepareStatement("UPDATE item SET name = ?, price = ? WHERE iditem = ?")) {

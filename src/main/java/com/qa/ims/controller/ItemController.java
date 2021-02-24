@@ -1,5 +1,6 @@
 package com.qa.ims.controller;
 
+import com.qa.ims.exceptions.ItemNotFoundException;
 import com.qa.ims.persistence.dao.ItemDAO;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.Utils;
@@ -52,8 +53,14 @@ public class ItemController implements CrudController<Item> {
         String name = utils.getString();
         LOGGER.info("Please enter a new price");
         double price = utils.getDouble();
-        Item item = itemDAO.update(new Item(id, name, price));
-        LOGGER.info("Item Updated");
+        Item item = null;
+        try {
+            item = itemDAO.update(new Item(id, name, price));
+            LOGGER.info("Item Updated");
+        } catch (ItemNotFoundException e) {
+            LOGGER.info("Item with ID " + id + " not found.");
+        }
+
         return item;
     }
 
