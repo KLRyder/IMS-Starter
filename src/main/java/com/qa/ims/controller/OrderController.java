@@ -152,8 +152,11 @@ public class OrderController implements CrudController<Order> {
         }
     }
 
+    //TODO make the user confirm that they wish to delete the order. Potently read order to confirm first?
     @Override
     public int delete() {
-        return 0;
+        LOGGER.info("Please enter the id  of the order you want to delete");
+        Long id = utils.getLong();
+        return orderDAO.delete(id);
     }
 }
