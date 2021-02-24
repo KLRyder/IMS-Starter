@@ -72,7 +72,7 @@ public class ItemDAO implements Dao<Item> {
             statement.setLong(3, item.getId());
             statement.executeUpdate();
             return read(item.getId());
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
         }
@@ -85,7 +85,7 @@ public class ItemDAO implements Dao<Item> {
              PreparedStatement statement = connection.prepareStatement("DELETE FROM item WHERE iditem = ?")) {
             statement.setLong(1, id);
             return statement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
         }

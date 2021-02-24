@@ -1,5 +1,6 @@
 package com.qa.ims.persistence.dao;
 
+import com.qa.ims.exceptions.OrderNotFoundException;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Order;
 import com.qa.ims.utils.DBUtils;
@@ -7,10 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OrderDAO implements Dao<Order> {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -94,6 +92,77 @@ public class OrderDAO implements Dao<Order> {
 
     @Override
     public Order update(Order order) {
+        try {
+            try {
+                Order currentOrder = read(order.getId());
+
+                Connection connection = DBUtils.getInstance().getConnection();
+                connection.setAutoCommit(false);
+                PreparedStatement statement;
+
+                // Customer updated -> update in order table;
+                if (!currentOrder.getCustomer().equals(order.getCustomer())) {
+                    statement = connection.prepareStatement(
+                            "UPDATE `order` SET custid = ? WHERE idorder = ?");
+                    statement.setLong(1, order.getCustomer().getId());
+                    statement.setLong(2, order.getId());
+                    statement.executeUpdate();
+                }
+
+                // Check for change in orders item
+                if (!currentOrder.getItems().equals(order.getItems())) {
+                    Set<Item> currentItems = currentOrder.getItems().keySet();
+                    Set<Item> updatedItems = order.getItems().keySet();
+
+                    //Check for new items in order -> insert new item into order_link table
+                    updatedItems.removeAll(currentItems);
+                    for (Item newItem : updatedItems) {
+                        statement = connection.prepareStatement(
+                                "INSERT INTO `order_link`(orderid, itemid, quantity) VALUES (?,?,?)");
+                        statement.setLong(1, order.getId());
+                        statement.setLong(2, newItem.getId());
+                        statement.setInt(3, order.getItems().get(newItem));
+                        statement.execute();
+                    }
+
+                    updatedItems = order.getItems().keySet();
+
+                    //Check for extra item in current items -> remove extra item from order_link table
+                    currentItems.removeAll(updatedItems);
+                    for (Item extraItem : currentItems) {
+                        statement = connection.prepareStatement("DELETE FROM `order_link` WHERE orderid = ? and itemid = ?");
+                        statement.setLong(1, order.getId());
+                        statement.setLong(2, extraItem.getId());
+                        statement.execute();
+                    }
+
+                    //Check for item quantity change -> update quantity in order_link
+                    for (Item item : updatedItems) {
+                        int oldVal = currentOrder.getItems().getOrDefault(item, 0);
+                        int newVal = order.getItems().get(item);
+                        if (oldVal != newVal) {
+                            statement = connection.prepareStatement(
+                                    "UPDATE `order_link` SET quantity = ? WHERE orderid = ? AND itemid = ?");
+                            statement.setInt(1, newVal);
+                            statement.setLong(2, order.getId());
+                            statement.setLong(3, item.getId());
+                            statement.execute();
+                        }
+                    }
+                }
+
+                connection.commit();
+                connection.close();
+
+                return read(order.getId());
+            } catch (OrderNotFoundException e) {
+                LOGGER.info("Order with id "+order.getId()+" cant be found in table");
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
         return null;
     }
 
