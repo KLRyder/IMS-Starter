@@ -57,6 +57,37 @@ public class Order implements Comparable<Order> {
         addItem(item, 1);
     }
 
+    public boolean setItemQuantity(Item item, int quant){
+        if (quant<1){
+            return false;
+        }
+
+        items.put(item,quant);
+        return true;
+    }
+
+    public boolean setItemQuantity(Long itemID, int quant){
+        for (Item item :items.keySet()) {
+            if (item.getId().equals(itemID)){
+                return setItemQuantity(item,quant);
+            }
+        }
+        return false;
+    }
+
+    public int getItemQuantity(Item item){
+        return items.getOrDefault(item,0);
+    }
+
+    public int getItemQuantity(Long itemID){
+        for (Item item :items.keySet()) {
+            if (item.getId().equals(itemID)){
+                return getItemQuantity(item);
+            }
+        }
+        return 0;
+    }
+
     public boolean removeItem(Item item) {
         if (!items.containsKey(item)) {
             return false;
