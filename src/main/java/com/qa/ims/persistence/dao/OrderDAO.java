@@ -12,8 +12,8 @@ import java.util.*;
 
 public class OrderDAO implements Dao<Order> {
     public static final Logger LOGGER = LogManager.getLogger();
-    private ItemDAO itemDAO = new ItemDAO();
-    private CustomerDAO customerDAO = new CustomerDAO();
+    private final ItemDAO itemDAO = new ItemDAO();
+    private final CustomerDAO customerDAO = new CustomerDAO();
 
     @Override
     public List<Order> readAll() {
@@ -156,7 +156,7 @@ public class OrderDAO implements Dao<Order> {
 
                 return read(order.getId());
             } catch (OrderNotFoundException e) {
-                LOGGER.info("Order with id "+order.getId()+" cant be found in table");
+                LOGGER.info("Order with id " + order.getId() + " cant be found in table");
                 return null;
             }
         } catch (SQLException e) {
@@ -196,6 +196,15 @@ public class OrderDAO implements Dao<Order> {
     }
 
     public Order readLatest() {
+        try (Connection connection = DBUtils.getInstance().getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM order_link ORDER BY orderid DESC LIMIT 1")) {
+            resultSet.next();
+            return modelFromResultSet(resultSet);
+        } catch (Exception e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
         return null;
     }
 }
