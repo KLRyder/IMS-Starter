@@ -57,25 +57,46 @@ public class Order implements Comparable<Order> {
         addItem(item, 1);
     }
 
-    public boolean removeItem(Item item) {
-        return removeItem(item, 1);
-    }
-
-    public boolean removeItem(Item item, Integer quantity) {
-        if (!items.containsKey(item)) {
+    public boolean setItemQuantity(Item item, int quant){
+        if (quant<1){
             return false;
         }
 
-        Integer currQuant = items.get(item);
-        if (currQuant <= quantity) {
-            items.remove(item);
-        } else {
-            items.put(item, currQuant - quantity);
-        }
+        items.put(item,quant);
         return true;
     }
 
-    public boolean removeItem(Long itemID, Integer quantity) {
+    public boolean setItemQuantity(Long itemID, int quant){
+        for (Item item :items.keySet()) {
+            if (item.getId().equals(itemID)){
+                return setItemQuantity(item,quant);
+            }
+        }
+        return false;
+    }
+
+    public int getItemQuantity(Item item){
+        return items.getOrDefault(item,0);
+    }
+
+    public int getItemQuantity(Long itemID){
+        for (Item item :items.keySet()) {
+            if (item.getId().equals(itemID)){
+                return getItemQuantity(item);
+            }
+        }
+        return 0;
+    }
+
+    public boolean removeItem(Item item) {
+        if (!items.containsKey(item)) {
+            return false;
+        }
+        items.remove(item);
+        return true;
+    }
+
+    public boolean removeItem(Long itemID) {
         Item itemToRemove = null;
         for (Item i : items.keySet()) {
             if (i.getId().equals(itemID)) {
@@ -88,12 +109,9 @@ public class Order implements Comparable<Order> {
             return false;
         }
 
-        return removeItem(itemToRemove, quantity);
+        return removeItem(itemToRemove);
     }
 
-    public boolean removeItem(Long itemID) {
-        return removeItem(itemID, 1);
-    }
 
     // Getters and setters
 
@@ -138,5 +156,18 @@ public class Order implements Comparable<Order> {
         } else {
             return 1;
         }
+    }
+
+    public boolean containsItem(Long id) {
+        for (Item i : items.keySet()) {
+            if (i.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsItem(Item item) {
+        return items.containsKey(item);
     }
 }
