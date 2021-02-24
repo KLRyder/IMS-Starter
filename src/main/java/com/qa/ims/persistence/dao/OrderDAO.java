@@ -114,9 +114,14 @@ public class OrderDAO implements Dao<Order> {
                     Set<Item> currentItems = currentOrder.getItems().keySet();
                     Set<Item> updatedItems = order.getItems().keySet();
 
-                    //Check for new items in order -> insert new item into order_link table
-                    updatedItems.removeAll(currentItems);
-                    for (Item newItem : updatedItems) {
+
+                    Set<Item> newItems = new HashSet<>(updatedItems);
+                    newItems.removeAll(currentItems);
+
+                    Set<Item> itemsToRemove = new HashSet<>(currentItems);
+                    itemsToRemove.removeAll(updatedItems);
+
+                    for (Item newItem : newItems) {
                         statement = connection.prepareStatement(
                                 "INSERT INTO `order_link`(orderid, itemid, quantity) VALUES (?,?,?)");
                         statement.setLong(1, order.getId());
@@ -125,11 +130,9 @@ public class OrderDAO implements Dao<Order> {
                         statement.execute();
                     }
 
-                    updatedItems = order.getItems().keySet();
 
                     //Check for extra item in current items -> remove extra item from order_link table
-                    currentItems.removeAll(updatedItems);
-                    for (Item extraItem : currentItems) {
+                    for (Item extraItem : itemsToRemove) {
                         statement = connection.prepareStatement("DELETE FROM `order_link` WHERE orderid = ? and itemid = ?");
                         statement.setLong(1, order.getId());
                         statement.setLong(2, extraItem.getId());
