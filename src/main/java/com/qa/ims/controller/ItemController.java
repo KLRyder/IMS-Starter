@@ -56,10 +56,11 @@ public class ItemController implements CrudController<Item> {
         Item item = null;
         try {
             item = itemDAO.update(new Item(id, name, price));
+            LOGGER.info("Item Updated");
         } catch (ItemNotFoundException e) {
             LOGGER.info("Item with ID " + id + " not found.");
         }
-        LOGGER.info("Item Updated");
+
         return item;
     }
 
