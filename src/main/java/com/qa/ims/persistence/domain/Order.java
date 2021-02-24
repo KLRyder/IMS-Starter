@@ -58,24 +58,14 @@ public class Order implements Comparable<Order> {
     }
 
     public boolean removeItem(Item item) {
-        return removeItem(item, 1);
-    }
-
-    public boolean removeItem(Item item, Integer quantity) {
         if (!items.containsKey(item)) {
             return false;
         }
-
-        Integer currQuant = items.get(item);
-        if (currQuant <= quantity) {
-            items.remove(item);
-        } else {
-            items.put(item, currQuant - quantity);
-        }
+        items.remove(item);
         return true;
     }
 
-    public boolean removeItem(Long itemID, Integer quantity) {
+    public boolean removeItem(Long itemID) {
         Item itemToRemove = null;
         for (Item i : items.keySet()) {
             if (i.getId().equals(itemID)) {
@@ -88,12 +78,9 @@ public class Order implements Comparable<Order> {
             return false;
         }
 
-        return removeItem(itemToRemove, quantity);
+        return removeItem(itemToRemove);
     }
 
-    public boolean removeItem(Long itemID) {
-        return removeItem(itemID, 1);
-    }
 
     // Getters and setters
 
