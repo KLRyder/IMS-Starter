@@ -3,6 +3,7 @@ package com.qa.ims.controllers;
 import com.qa.ims.controller.OrderController;
 import com.qa.ims.exceptions.CustomerNotFoundException;
 import com.qa.ims.exceptions.ItemNotFoundException;
+import com.qa.ims.exceptions.OrderNotFoundException;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.dao.ItemDAO;
 import com.qa.ims.persistence.dao.OrderDAO;
@@ -122,7 +123,7 @@ public class OrderControllerTest {
     @Test
     public void updateOrderNotExistsTest() {
         Mockito.when(this.utils.getLong()).thenReturn(1L);
-        Mockito.when(orderDao.read(1L)).thenThrow(new CustomerNotFoundException());
+        Mockito.when(orderDao.read(1L)).thenThrow(new OrderNotFoundException());
 
         assertNull(controller.update());
 
