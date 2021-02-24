@@ -7,8 +7,17 @@ import com.qa.ims.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class OrderDAO implements Dao<Order> {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -33,15 +42,17 @@ public class OrderDAO implements Dao<Order> {
     }
 
     @Override
-    public Order read(Long id) {
+    public Order read(Long id) throws OrderNotFoundException {
         try (Connection connection = DBUtils.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM `order` WHERE idorder = ?")) {
             statement.setLong(1, id);
             try (ResultSet rs = statement.executeQuery()) {
-                rs.next();
+                if (!rs.next()) {
+                    throw new OrderNotFoundException();
+                }
                 return modelFromResultSet(rs);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
         }
@@ -176,7 +187,7 @@ public class OrderDAO implements Dao<Order> {
             statement.setLong(1, id);
             int toReturn = statement.executeUpdate();
             statement = connection.prepareStatement("DELETE FROM order_link WHERE orderid = ?");
-            statement.setLong(1,id);
+            statement.setLong(1, id);
             return statement.executeUpdate() + toReturn;
         } catch (SQLException e) {
             LOGGER.debug(e);
@@ -215,7 +226,7 @@ public class OrderDAO implements Dao<Order> {
              ResultSet resultSet = statement.executeQuery("SELECT * FROM order_link ORDER BY orderid DESC LIMIT 1")) {
             resultSet.next();
             return modelFromResultSet(resultSet);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
         }
