@@ -139,4 +139,17 @@ public class Order implements Comparable<Order> {
             return 1;
         }
     }
+
+    public boolean containsItem(Long id) {
+        for (Item i : items.keySet()) {
+            if (i.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsItem(Item item) {
+        return items.containsKey(item);
+    }
 }
