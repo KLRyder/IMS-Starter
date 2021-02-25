@@ -1,14 +1,17 @@
 package com.qa.ims.persistence.domain;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 
 public class OrderTest {
 
@@ -18,7 +21,7 @@ public class OrderTest {
     public Customer customer;
     public HashMap<Item, Integer> items;
 
-    @BeforeEach
+    @Before
     public void refreshTestVariables() {
         i1 = new Item(1L, "itm", 11.11);
         i2 = new Item(2L, "item", 22.22);
@@ -41,7 +44,7 @@ public class OrderTest {
     public void totalPriceTest() {
         Order testOrder = new Order(customer, items);
 
-        assertEquals(66.66, testOrder.getTotalCost());
+        assertEquals(66.66, testOrder.getTotalCost(), 0.001);
     }
 
     @Test

@@ -11,21 +11,22 @@ import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Order;
 import com.qa.ims.utils.Utils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.Test;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class OrderControllerTest {
 
     public Customer testCust;
@@ -49,7 +50,7 @@ public class OrderControllerTest {
     @InjectMocks
     private OrderController controller;
 
-    @BeforeEach
+    @Before
     public void refreshTestObjects() {
         testCust = new Customer(1L, "test", "cust");
         testItem1 = new Item(1L, "test_item1", 22.22);

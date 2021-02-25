@@ -3,23 +3,23 @@ package com.qa.ims.controllers;
 import com.qa.ims.controller.ItemController;
 import com.qa.ims.exceptions.ItemNotFoundException;
 import com.qa.ims.persistence.dao.ItemDAO;
-import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.Utils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-@ExtendWith(MockitoExtension.class)
+
+@RunWith(MockitoJUnitRunner.class)
 public class ItemControllerTest {
 
     @Mock

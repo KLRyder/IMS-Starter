@@ -8,16 +8,16 @@ import java.util.List;
 import com.qa.ims.exceptions.CustomerNotFoundException;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.DBUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomerDAOTest {
 
     private final CustomerDAO DAO = new CustomerDAO();
 
-    @BeforeEach
+    @Before
     public void setup() {
         DBUtils.connect();
         DBUtils.getInstance().init("src/test/resources/sql-schema.sql", "src/test/resources/sql-data.sql");
