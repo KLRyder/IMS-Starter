@@ -192,6 +192,23 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void updateAddItemAlreadyExistsTest() {
+        testOrder = new Order(1L, testCust, testItems);
+
+        when(utils.getLong()).thenReturn(1L, 1L);
+        when(utils.getString()).thenReturn("add","done");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(orderDao.update(testOrder)).thenReturn(testOrder);
+
+        assertEquals(testOrder, controller.update());
+
+        verify(utils, times(2)).getLong();
+        verify(utils, times(2)).getString();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(testOrder);
+    }
+
+    @Test
     public void updateAddItemNotExistsTest() {
         testOrder = new Order(1L, testCust, testItems);
 
