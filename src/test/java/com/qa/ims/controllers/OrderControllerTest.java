@@ -286,6 +286,23 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void updateCancelTest() {
+        testOrder = new Order(1L, testCust, testItems);
+        Order updatedOrder = new Order(1L, testCust, new HashMap<>(testItems));
+        updatedOrder.removeItem(testItem1);
+
+        when(utils.getLong()).thenReturn(1L, 1L);
+        when(utils.getString()).thenReturn("remove","cancel");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+
+        assertNull(controller.update());
+
+        verify(utils, times(2)).getLong();
+        verify(utils, times(2)).getString();
+        verify(orderDao, times(1)).read(1L);
+    }
+
+    @Test
     public void testDelete() {
         final long ID = 1L;
 
