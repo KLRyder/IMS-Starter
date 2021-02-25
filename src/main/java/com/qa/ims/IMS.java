@@ -65,6 +65,9 @@ public class IMS {
                     break;
                 case STOP:
                     return;
+                case INIT:
+                    DBUtils.connect().init("classes/sql-schema.sql");
+                    LOGGER.info("New tables created.");
                 default:
                     break;
             }

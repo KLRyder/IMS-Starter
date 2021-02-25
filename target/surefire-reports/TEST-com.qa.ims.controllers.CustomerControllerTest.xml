@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="5" failures="0" name="com.qa.ims.controllers.CustomerControllerTest" time="1.413" errors="0" skipped="0">
+<testsuite tests="5" failures="0" name="com.qa.ims.controllers.CustomerControllerTest" time="1.471" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="java.vm.version" value="14.0.2+12-46"/>
@@ -60,9 +60,9 @@
     <property name="sun.stdout.encoding" value="cp850"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testReadAll" time="1.395"/>
-  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testCreate" time="0.004"/>
-  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testDelete" time="0.004"/>
-  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testUpdate" time="0.004"/>
-  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testUpdateCustomerNotFound" time="0.006"/>
+  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testReadAll" time="1.444"/>
+  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testCreate" time="0.01"/>
+  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testDelete" time="0.002"/>
+  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testUpdate" time="0.007"/>
+  <testcase classname="com.qa.ims.controllers.CustomerControllerTest" name="testUpdateCustomerNotFound" time="0.008"/>
 </testsuite>
