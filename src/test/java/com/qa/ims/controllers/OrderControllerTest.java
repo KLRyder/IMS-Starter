@@ -175,15 +175,17 @@ public class OrderControllerTest {
         testOrder = new Order(1L, testCust, testItems);
 
         when(utils.getLong()).thenReturn(1L, 2L);
-        when(utils.getString()).thenReturn("add");
+        when(utils.getString()).thenReturn("add", "done");
 
         when(orderDao.read(1L)).thenReturn(testOrder);
         when(itemDAO.read(2L)).thenThrow(new ItemNotFoundException());
+        when(orderDao.update(testOrder)).thenReturn(testOrder);
 
         assertEquals(testOrder, controller.update());
 
-        verify(utils, times(1)).getLong();
-        verify(utils, times(1)).getString();
+        verify(utils, times(2)).getLong();
+        verify(utils, times(2)).getString();
+        verify(orderDao, times(1)).update(testOrder);
         verify(orderDao, times(1)).read(1L);
         verify(itemDAO, times(1)).read(2L);
     }
