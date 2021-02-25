@@ -263,6 +263,27 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void updateQuantityNegativeTest() {
+        testOrder = new Order(1L, testCust, testItems);
+        Order updateOrder = new Order(1L,testCust,new HashMap<>(testItems));
+        updateOrder.removeItem(1L);
+
+        when(utils.getLong()).thenReturn(1L, 1L);
+        when(utils.getString()).thenReturn("quantity","done");
+        when(utils.getInt()).thenReturn(-12);
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(orderDao.update(updateOrder)).thenReturn(updateOrder);
+
+        assertEquals(updateOrder, controller.update());
+
+        verify(utils, times(2)).getLong();
+        verify(utils, times(2)).getString();
+        verify(utils, times(1)).getInt();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(updateOrder);
+    }
+
+    @Test
     public void testDelete() {
         final long ID = 1L;
 
