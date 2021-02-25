@@ -171,6 +171,29 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void updateMistypeTest() {
+        testOrder = new Order(1L, testCust, testItems);
+        Order updatedOrder = new Order(1L, testCust, new HashMap<>(testItems));
+        updatedOrder.addItem(testItem2, 2);
+
+        when(utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getString()).thenReturn("dasdad","add","done");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(itemDAO.read(2L)).thenReturn(testItem2);
+        when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
+        when(utils.getInt()).thenReturn(2);
+
+        assertEquals(updatedOrder, controller.update());
+
+        verify(utils, times(2)).getLong();
+        verify(utils, times(3)).getString();
+        verify(utils, times(1)).getInt();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(updatedOrder);
+        verify(itemDAO, times(1)).read(2L);
+    }
+
+    @Test
     public void updateAddItemNegativeTest() {
         testOrder = new Order(1L, testCust, testItems);
 
