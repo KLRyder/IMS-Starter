@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -54,10 +53,9 @@ public class OrderControllerTest {
     public void refreshTestObjects() {
         testCust = new Customer(1L, "test", "cust");
         testItem1 = new Item(1L, "test_item1", 22.22);
-        testItem2 = new Item(2L, "test_item2", 31.86);
+        testItem2 = new Item(2L,"test_item2", 33.33);
         testItems = new HashMap<>();
         testItems.put(testItem1,2);
-        testItems.put(testItem2,1);
     }
 
     @Test
@@ -116,7 +114,7 @@ public class OrderControllerTest {
         Customer newCust = new Customer(2L, "J.Jonah", "Jameson");
         Order updatedOrder = new Order(1L, newCust, testItems);
 
-        when(this.utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getLong()).thenReturn(1L, 2L);
         when(utils.getString()).thenReturn("customer","done");
         when(orderDao.read(1L)).thenReturn(testOrder);
         when(customerDAO.read(2L)).thenReturn(newCust);
@@ -135,40 +133,41 @@ public class OrderControllerTest {
     public void updateCustomerNotExistsTest() {
         testOrder = new Order(1L, testCust, testItems);
         when(this.utils.getLong()).thenReturn(1L, 2L);
-        when(utils.getString()).thenReturn("customer");
+        when(utils.getString()).thenReturn("customer","done");
         when(orderDao.read(1L)).thenReturn(testOrder);
         when(customerDAO.read(2L)).thenThrow(new CustomerNotFoundException());
+        when(orderDao.update(testOrder)).thenReturn(testOrder);
 
         assertEquals(testOrder, controller.update());
 
         verify(this.utils, times(2)).getLong();
-        verify(utils, times(1)).getString();
+        verify(utils, times(2)).getString();
         verify(orderDao, times(1)).read(1L);
         verify(customerDAO, times(1)).read(2L);
+        verify(orderDao,times(1)).update(testOrder);
     }
 
     @Test
     public void updateAddItemTest() {
         testOrder = new Order(1L, testCust, testItems);
-        Order updatedOrder = new Order(1L, testCust, (Map<Item, Integer>) testItems.clone());
-        updatedOrder.addItem(testItem1, 2);
+        Order updatedOrder = new Order(1L, testCust, new HashMap<>(testItems));
+        updatedOrder.addItem(testItem2, 2);
 
-        when(utils.getLong()).thenReturn(1L, 1L);
-        when(utils.getString()).thenReturn("add");
-        when(utils.getInt()).thenReturn(2);
-
+        when(utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getString()).thenReturn("add","done");
         when(orderDao.read(1L)).thenReturn(testOrder);
+        when(itemDAO.read(2L)).thenReturn(testItem2);
         when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
-        when(itemDAO.read(1L)).thenReturn(testItem1);
+        when(utils.getInt()).thenReturn(2);
 
         assertEquals(updatedOrder, controller.update());
 
         verify(utils, times(2)).getLong();
-        verify(utils, times(1)).getString();
+        verify(utils, times(2)).getString();
         verify(utils, times(1)).getInt();
         verify(orderDao, times(1)).read(1L);
         verify(orderDao, times(1)).update(updatedOrder);
-        verify(itemDAO, times(1)).read(1L);
+        verify(itemDAO, times(1)).read(2L);
     }
 
     @Test
