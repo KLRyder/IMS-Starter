@@ -4,6 +4,7 @@ package com.qa.ims.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.qa.ims.exceptions.CustomerNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +18,7 @@ import com.qa.ims.utils.Utils;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 public class CustomerControllerTest {
@@ -65,6 +67,21 @@ public class CustomerControllerTest {
 		Mockito.when(this.dao.update(updated)).thenReturn(updated);
 
 		assertEquals(updated, this.controller.update());
+
+		Mockito.verify(this.utils, Mockito.times(1)).getLong();
+		Mockito.verify(this.utils, Mockito.times(2)).getString();
+		Mockito.verify(this.dao, Mockito.times(1)).update(updated);
+	}
+
+	@Test
+	public void testUpdateCustomerNotFound() {
+		Customer updated = new Customer(2L, "chris", "perrins");
+
+		Mockito.when(this.utils.getLong()).thenReturn(2L);
+		Mockito.when(this.utils.getString()).thenReturn(updated.getFirstName(), updated.getSurname());
+		Mockito.when(this.dao.update(updated)).thenThrow(new CustomerNotFoundException());
+
+		assertNull(this.controller.update());
 
 		Mockito.verify(this.utils, Mockito.times(1)).getLong();
 		Mockito.verify(this.utils, Mockito.times(2)).getString();
