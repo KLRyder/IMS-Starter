@@ -1,11 +1,11 @@
 package com.qa.ims;
 
+import com.qa.ims.controller.*;
+import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.dao.OrderDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.qa.ims.controller.Action;
-import com.qa.ims.controller.CrudController;
-import com.qa.ims.controller.CustomerController;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.domain.Domain;
 import com.qa.ims.utils.DBUtils;
@@ -13,84 +13,94 @@ import com.qa.ims.utils.Utils;
 
 public class IMS {
 
-	public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
-	private final CustomerController customers;
-	private final Utils utils;
+    private final CustomerController customers;
+    private final ItemController items;
+    private final OrderController orders;
+    private final Utils utils;
 
-	public IMS() {
-		this.utils = new Utils();
-		final CustomerDAO custDAO = new CustomerDAO();
-		this.customers = new CustomerController(custDAO, utils);
-	}
+    public IMS() {
+        this.utils = new Utils();
+        final CustomerDAO custDAO = new CustomerDAO();
+        this.customers = new CustomerController(custDAO, utils);
 
-	public void imsSystem() {
-		LOGGER.info("Welcome to the Inventory Management System!");
-		DBUtils.connect();
+        final ItemDAO itemDAO = new ItemDAO();
+        this.items = new ItemController(itemDAO, utils);
 
-		Domain domain = null;
-		do {
-			LOGGER.info("Which entity would you like to use?");
-			Domain.printDomains();
+        final OrderDAO orderDAO = new OrderDAO();
+        this.orders = new OrderController(custDAO, orderDAO, itemDAO, utils);
+    }
 
-			domain = Domain.getDomain(utils);
+    public void imsSystem() {
+        LOGGER.info("Welcome to the Inventory Management System!");
+        DBUtils.connect();
 
-			domainAction(domain);
+        Domain domain;
+        do {
+            LOGGER.info("Which entity would you like to use?");
+            Domain.printDomains();
 
-		} while (domain != Domain.STOP);
-	}
+            domain = Domain.getDomain(utils);
 
-	private void domainAction(Domain domain) {
-		boolean changeDomain = false;
-		do {
+            domainAction(domain);
 
-			CrudController<?> active = null;
-			switch (domain) {
-			case CUSTOMER:
-				active = this.customers;
-				break;
-			case ITEM:
-				break;
-			case ORDER:
-				break;
-			case STOP:
-				return;
-			default:
-				break;
-			}
+        } while (domain != Domain.STOP);
+    }
 
-			LOGGER.info(() ->"What would you like to do with " + domain.name().toLowerCase() + ":");
+    private void domainAction(Domain domain) {
+        boolean changeDomain = false;
+        do {
 
-			Action.printActions();
-			Action action = Action.getAction(utils);
+            CrudController<?> active = null;
+            switch (domain) {
+                case CUSTOMER:
+                    active = this.customers;
+                    break;
+                case ITEM:
+                    active = this.items;
+                    break;
+                case ORDER:
+                    active = this.orders;
+                    break;
+                case STOP:
+                    return;
+                default:
+                    break;
+            }
 
-			if (action == Action.RETURN) {
-				changeDomain = true;
-			} else {
-				doAction(active, action);
-			}
-		} while (!changeDomain);
-	}
+            LOGGER.info(() -> "What would you like to do with " + domain.name().toLowerCase() + ":");
 
-	public void doAction(CrudController<?> crudController, Action action) {
-		switch (action) {
-		case CREATE:
-			crudController.create();
-			break;
-		case READ:
-			crudController.readAll();
-			break;
-		case UPDATE:
-			crudController.update();
-			break;
-		case DELETE:
-			crudController.delete();
-			break;
-		case RETURN:
-			break;
-		default:
-			break;
-		}
-	}
+            Action.printActions();
+            Action action = Action.getAction(utils);
+
+            if (action == Action.RETURN) {
+                changeDomain = true;
+            } else {
+                doAction(active, action);
+            }
+        } while (!changeDomain);
+    }
+
+    public void doAction(CrudController<?> crudController, Action action) {
+        switch (action) {
+            case CREATE:
+                crudController.create();
+                break;
+            case READ:
+                crudController.readAll();
+                break;
+            case UPDATE:
+                crudController.update();
+                break;
+            case DELETE:
+                crudController.delete();
+                break;
+            case RETURN:
+                break;
+            default:
+                break;
+        }
+    }
 
 }

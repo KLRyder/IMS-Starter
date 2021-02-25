@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.qa</groupId>
 	<artifactId>ims</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -58,7 +58,7 @@
 
 	<build>
 		<plugins>
-			<!-- Creates a jar for the code (does not contain other dependencies which 
+			<!-- Creates a jar for the code (does not contain other dependencies which
 				are needed for the project to run out of the box) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

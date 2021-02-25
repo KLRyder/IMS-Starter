@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Item.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.persistence.domain</a> &gt; <span class="el_source">Item.java</span></div><h1>Item.java</h1><pre class="source lang-java linenums">package com.qa.ims.persistence.domain;
+
+import java.util.Objects;
+
+public class Item implements Comparable&lt;Item&gt;{
+
+    private Long id;
+    private String name;
+    private Double price;
+
+<span class="fc" id="L11">    public Item(String name, double price) {</span>
+<span class="fc" id="L12">        this.setName(name);</span>
+<span class="fc" id="L13">        this.setPrice(price);</span>
+<span class="fc" id="L14">    }</span>
+
+    public Item(Long id, String name, double price) {
+<span class="fc" id="L17">        this(name, price);</span>
+<span class="fc" id="L18">        this.setId(id);</span>
+<span class="fc" id="L19">    }</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L23">        return &quot;id:&quot; + id + &quot; name:&quot; + name + &quot; price:&quot; + price;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="fc bfc" id="L29" title="All 4 branches covered.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L30">        Item item = (Item) o;</span>
+<span class="fc bfc" id="L31" title="All 6 branches covered.">        return Objects.equals(id, item.id) &amp;&amp; Objects.equals(name, item.name) &amp;&amp; Objects.equals(price, item.price);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L36">        return Objects.hash(id, name, price);</span>
+    }
+
+    // Getters and setters
+
+    public Long getId() {
+<span class="fc" id="L42">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L46">        this.id = id;</span>
+<span class="fc" id="L47">    }</span>
+
+    public String getName() {
+<span class="fc" id="L50">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L54">        this.name = name;</span>
+<span class="fc" id="L55">    }</span>
+
+    public Double getPrice() {
+<span class="fc" id="L58">        return price;</span>
+    }
+
+    public void setPrice(Double price) {
+<span class="fc" id="L62">        this.price = price;</span>
+<span class="fc" id="L63">    }</span>
+
+    @Override
+    public int compareTo(Item o) {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (id &lt; o.id) {</span>
+<span class="fc" id="L68">            return -1;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        } else if (id.equals(o.id)) {</span>
+<span class="nc" id="L70">            return 0;</span>
+        } else {
+<span class="fc" id="L72">            return 1;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

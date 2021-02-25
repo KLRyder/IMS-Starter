@@ -1,21 +1,24 @@
 package com.qa.ims.controllers;
 
-import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.qa.ims.exceptions.CustomerNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.qa.ims.controller.CustomerController;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.Utils;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CustomerControllerTest {
@@ -64,6 +67,21 @@ public class CustomerControllerTest {
 		Mockito.when(this.dao.update(updated)).thenReturn(updated);
 
 		assertEquals(updated, this.controller.update());
+
+		Mockito.verify(this.utils, Mockito.times(1)).getLong();
+		Mockito.verify(this.utils, Mockito.times(2)).getString();
+		Mockito.verify(this.dao, Mockito.times(1)).update(updated);
+	}
+
+	@Test
+	public void testUpdateCustomerNotFound() {
+		Customer updated = new Customer(2L, "chris", "perrins");
+
+		Mockito.when(this.utils.getLong()).thenReturn(2L);
+		Mockito.when(this.utils.getString()).thenReturn(updated.getFirstName(), updated.getSurname());
+		Mockito.when(this.dao.update(updated)).thenThrow(new CustomerNotFoundException());
+
+		assertNull(this.controller.update());
 
 		Mockito.verify(this.utils, Mockito.times(1)).getLong();
 		Mockito.verify(this.utils, Mockito.times(2)).getString();

@@ -1,5 +1,6 @@
 package com.qa.ims.exceptions;
 
+
 public class CustomerNotFoundException extends RuntimeException {
 
 	/**

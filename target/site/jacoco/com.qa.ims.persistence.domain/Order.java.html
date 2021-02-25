@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Order.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.persistence.domain</a> &gt; <span class="el_source">Order.java</span></div><h1>Order.java</h1><pre class="source lang-java linenums">package com.qa.ims.persistence.domain;
+
+import java.util.*;
+
+public class Order implements Comparable&lt;Order&gt; {
+    private Long id;
+    private Customer customer;
+    private Map&lt;Item, Integer&gt; items;
+
+<span class="fc" id="L10">    public Order(Customer customer, Map&lt;Item, Integer&gt; items) {</span>
+<span class="fc" id="L11">        setCustomer(customer);</span>
+<span class="fc" id="L12">        setItems(items);</span>
+<span class="fc" id="L13">    }</span>
+
+    public Order(Long id, Customer customer, Map&lt;Item, Integer&gt; items) {
+<span class="fc" id="L16">        this(customer, items);</span>
+<span class="fc" id="L17">        this.setId(id);</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public String toString() {
+
+<span class="fc" id="L23">        StringBuilder s = new StringBuilder();</span>
+
+<span class="fc" id="L25">        s.append(&quot;Info for Order ID &quot;).append(id).append(&quot;:\n    Customer:\n        &quot;).append(customer)</span>
+<span class="fc" id="L26">                .append(&quot;\n    Items:\n&quot;);</span>
+
+<span class="fc" id="L28">        Map&lt;Item, Integer&gt; tempItems = new HashMap&lt;&gt;(items);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        for (Item item : tempItems.keySet()) {</span>
+<span class="fc" id="L30">            s.append(&quot;        Item ID: &quot;).append(item.getId()).append(&quot; Item name: &quot;).append(item.getName())</span>
+<span class="fc" id="L31">                    .append(&quot; Price: &quot;).append(item.getPrice()).append(&quot; Quantity: &quot;)</span>
+<span class="fc" id="L32">                    .append(tempItems.get(item)).append(&quot;\n&quot;);</span>
+<span class="fc" id="L33">        }</span>
+
+<span class="fc" id="L35">        s.append(&quot;    Total Price: &quot;).append(getTotalCost());</span>
+<span class="fc" id="L36">        return s.toString();</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L43">        Order order = (Order) o;</span>
+<span class="fc bfc" id="L44" title="All 6 branches covered.">        return Objects.equals(id, order.id) &amp;&amp; Objects.equals(customer, order.customer) &amp;&amp; Objects.equals(items, order.items);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L49">        return Objects.hash(id, customer, items);</span>
+    }
+
+    public void addItem(Item item, Integer quantity) {
+<span class="fc" id="L53">        items.put(item, items.getOrDefault(item, 0) + quantity);</span>
+<span class="fc" id="L54">    }</span>
+
+    public void addItem(Item item) {
+<span class="fc" id="L57">        addItem(item, 1);</span>
+<span class="fc" id="L58">    }</span>
+
+    public boolean setItemQuantity(Item item, int quant){
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (quant&lt;1){</span>
+<span class="nc" id="L62">            return false;</span>
+        }
+
+<span class="fc" id="L65">        items.put(item,quant);</span>
+<span class="fc" id="L66">        return true;</span>
+    }
+
+    public boolean setItemQuantity(Long itemID, int quant){
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (Item item :items.keySet()) {</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">            if (item.getId().equals(itemID)){</span>
+<span class="fc" id="L72">                return setItemQuantity(item,quant);</span>
+            }
+<span class="nc" id="L74">        }</span>
+<span class="fc" id="L75">        return false;</span>
+    }
+
+    public int getItemQuantity(Item item){
+<span class="fc" id="L79">        return items.getOrDefault(item,0);</span>
+    }
+
+    public int getItemQuantity(Long itemID){
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        for (Item item :items.keySet()) {</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">            if (item.getId().equals(itemID)){</span>
+<span class="fc" id="L85">                return getItemQuantity(item);</span>
+            }
+<span class="nc" id="L87">        }</span>
+<span class="nc" id="L88">        return 0;</span>
+    }
+
+    public boolean removeItem(Item item) {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (!items.containsKey(item)) {</span>
+<span class="fc" id="L93">            return false;</span>
+        }
+<span class="fc" id="L95">        items.remove(item);</span>
+<span class="fc" id="L96">        return true;</span>
+    }
+
+    public boolean removeItem(Long itemID) {
+<span class="fc" id="L100">        Item itemToRemove = null;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (Item i : items.keySet()) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            if (i.getId().equals(itemID)) {</span>
+<span class="fc" id="L103">                itemToRemove = i;</span>
+<span class="fc" id="L104">                break;</span>
+            }
+<span class="fc" id="L106">        }</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (itemToRemove == null) {</span>
+<span class="fc" id="L109">            return false;</span>
+        }
+
+<span class="fc" id="L112">        return removeItem(itemToRemove);</span>
+    }
+
+
+    // Getters and setters
+
+    public Long getId() {
+<span class="fc" id="L119">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L123">        this.id = id;</span>
+<span class="fc" id="L124">    }</span>
+
+    public Customer getCustomer() {
+<span class="fc" id="L127">        return customer;</span>
+    }
+
+    public void setCustomer(Customer customer) {
+<span class="fc" id="L131">        this.customer = customer;</span>
+<span class="fc" id="L132">    }</span>
+
+    public Map&lt;Item, Integer&gt; getItems() {
+<span class="fc" id="L135">        return items;</span>
+    }
+
+    public void setItems(Map&lt;Item, Integer&gt; items) {
+<span class="fc" id="L139">        this.items = items;</span>
+<span class="fc" id="L140">    }</span>
+
+    public double getTotalCost() {
+<span class="fc" id="L143">        double acc = 0;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (Item item : items.keySet()) {</span>
+<span class="fc" id="L145">            acc += item.getPrice() * items.get(item);</span>
+<span class="fc" id="L146">        }</span>
+<span class="fc" id="L147">        return acc;</span>
+    }
+
+    @Override
+    public int compareTo(Order o) {
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (id &lt; o.id) {</span>
+<span class="nc" id="L153">            return -1;</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        } else if (id.equals(o.id)) {</span>
+<span class="nc" id="L155">            return 0;</span>
+        } else {
+<span class="nc" id="L157">            return 1;</span>
+        }
+    }
+
+    public boolean containsItem(Long id) {
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (Item i : items.keySet()) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            if (i.getId().equals(id)) {</span>
+<span class="fc" id="L164">                return true;</span>
+            }
+<span class="fc" id="L166">        }</span>
+<span class="fc" id="L167">        return false;</span>
+    }
+
+    public boolean containsItem(Item item) {
+<span class="nc" id="L171">        return items.containsKey(item);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
