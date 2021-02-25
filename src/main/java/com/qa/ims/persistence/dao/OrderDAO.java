@@ -28,7 +28,7 @@ public class OrderDAO implements Dao<Order> {
     public List<Order> readAll() {
         try (Connection connection = DBUtils.getInstance().getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM `order`")) {
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM `order` ORDER BY idorder")) {
             List<Order> orders = new ArrayList<>();
             while (resultSet.next()) {
                 orders.add(modelFromResultSet(resultSet));
@@ -106,6 +106,10 @@ public class OrderDAO implements Dao<Order> {
         try {
             try {
                 Order currentOrder = read(order.getId());
+
+                if (currentOrder == null) {
+                    throw new SQLException();
+                }
 
                 Connection connection = DBUtils.getInstance().getConnection();
                 connection.setAutoCommit(false);
@@ -223,9 +227,10 @@ public class OrderDAO implements Dao<Order> {
     public Order readLatest() {
         try (Connection connection = DBUtils.getInstance().getConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM order_link ORDER BY orderid DESC LIMIT 1")) {
-            resultSet.next();
-            return modelFromResultSet(resultSet);
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM `order` ORDER BY idorder DESC LIMIT 1")) {
+            if (resultSet.next()) {
+                return modelFromResultSet(resultSet);
+            } else throw new OrderNotFoundException();
         } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
