@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderControllerTest {
@@ -64,27 +65,27 @@ public class OrderControllerTest {
     public void testCreate() {
         testOrder = new Order(testCust, new HashMap<>());
 
-        Mockito.when(utils.getLong()).thenReturn(1L);
-        Mockito.when(orderDao.create(testOrder)).thenReturn(testOrder);
-        Mockito.when(customerDAO.read(1L)).thenReturn(testCust);
+        when(utils.getLong()).thenReturn(1L);
+        when(orderDao.create(testOrder)).thenReturn(testOrder);
+        when(customerDAO.read(1L)).thenReturn(testCust);
 
         assertEquals(testOrder, controller.create());
 
-        Mockito.verify(utils, Mockito.times(1)).getLong();
-        Mockito.verify(orderDao, Mockito.times(1)).create(testOrder);
-        Mockito.verify(customerDAO, Mockito.times(1)).read(1L);
+        verify(utils, times(1)).getLong();
+        verify(orderDao, times(1)).create(testOrder);
+        verify(customerDAO, times(1)).read(1L);
     }
 
     @Test
     public void testCreateInvalidCustomer() {
         testOrder = new Order(new Customer(11111L, "fakie", "mcfakeface"), new HashMap<>());
-        Mockito.when(utils.getLong()).thenReturn(11111L);
-        Mockito.when(orderDao.create(testOrder)).thenThrow(new CustomerNotFoundException());
+        when(utils.getLong()).thenReturn(11111L);
+        when(customerDAO.read(11111L)).thenThrow(new CustomerNotFoundException());
 
         assertNull(controller.create());
 
-        Mockito.verify(utils, Mockito.times(1)).getLong();
-        Mockito.verify(orderDao, Mockito.times(1)).create(testOrder);
+        verify(utils, times(1)).getLong();
+        verify(customerDAO, times(1)).read(11111L);
     }
 
     @Test
@@ -93,11 +94,11 @@ public class OrderControllerTest {
         testOrder = new Order(testCust, testItems);
         orders.add(testOrder);
 
-        Mockito.when(orderDao.readAll()).thenReturn(orders);
+        when(orderDao.readAll()).thenReturn(orders);
 
         assertEquals(orders, controller.readAll());
 
-        Mockito.verify(orderDao, Mockito.times(1)).readAll();
+        verify(orderDao, times(1)).readAll();
     }
 
     @Test
@@ -106,31 +107,31 @@ public class OrderControllerTest {
         Order expectedOrder = new Order(1L, testCust, (Map<Item, Integer>) testItems.clone());
         expectedOrder.addItem(testItem1 , 2);
 
-        Mockito.when(this.utils.getLong()).thenReturn(1L, 1L);
-        Mockito.when(utils.getString()).thenReturn("add");
-        Mockito.when(utils.getInt()).thenReturn(2);
+        when(this.utils.getLong()).thenReturn(1L, 1L);
+        when(utils.getString()).thenReturn("add");
+        when(utils.getInt()).thenReturn(2);
 
-        Mockito.when(orderDao.read(1L)).thenReturn(testOrder);
-        Mockito.when(orderDao.update(expectedOrder)).thenReturn(expectedOrder);
-        Mockito.when(itemDAO.read(1L)).thenReturn(testItem1);
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(orderDao.update(expectedOrder)).thenReturn(expectedOrder);
+        when(itemDAO.read(1L)).thenReturn(testItem1);
 
         assertEquals(expectedOrder, controller.update());
 
-        Mockito.verify(this.utils, Mockito.times(2)).getLong();
-        Mockito.verify(this.utils, Mockito.times(1)).getString();
-        Mockito.verify(this.utils, Mockito.times(1)).getInt();
-        Mockito.verify(this.orderDao, Mockito.times(1)).update(expectedOrder);
+        verify(this.utils, times(2)).getLong();
+        verify(this.utils, times(1)).getString();
+        verify(this.utils, times(1)).getInt();
+        verify(this.orderDao, times(1)).update(expectedOrder);
 
     }
 
     @Test
     public void updateOrderNotExistsTest() {
-        Mockito.when(this.utils.getLong()).thenReturn(1L);
-        Mockito.when(orderDao.read(1L)).thenThrow(new OrderNotFoundException());
+        when(this.utils.getLong()).thenReturn(1L);
+        when(orderDao.read(1L)).thenThrow(new OrderNotFoundException());
 
         assertNull(controller.update());
 
-        Mockito.verify(utils, Mockito.times(1)).getLong();
+        verify(utils, times(1)).getLong();
     }
 
     @Test
@@ -139,35 +140,35 @@ public class OrderControllerTest {
         Customer newCust = new Customer(2L, "J.Jonah", "Jameson");
         Order updatedOrder = new Order(1L, newCust, testItems);
 
-        Mockito.when(this.utils.getLong()).thenReturn(1L, 2L);
-        Mockito.when(utils.getString()).thenReturn("customer");
-        Mockito.when(orderDao.read(1L)).thenReturn(testOrder);
-        Mockito.when(customerDAO.read(2L)).thenReturn(newCust);
-        Mockito.when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
+        when(this.utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getString()).thenReturn("customer");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(customerDAO.read(2L)).thenReturn(newCust);
+        when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
 
         assertEquals(updatedOrder, controller.update());
 
-        Mockito.verify(utils, Mockito.times(2)).getLong();
-        Mockito.verify(utils, Mockito.times(1)).getString();
-        Mockito.verify(orderDao, Mockito.times(1)).read(1L);
-        Mockito.verify(orderDao, Mockito.times(1)).update(updatedOrder);
-        Mockito.verify(customerDAO, Mockito.times(1)).read(1L);
+        verify(utils, times(2)).getLong();
+        verify(utils, times(1)).getString();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(updatedOrder);
+        verify(customerDAO, times(1)).read(1L);
     }
 
     @Test
     public void updateCustomerNotExistsTest() {
         testOrder = new Order(1L, testCust, testItems);
-        Mockito.when(this.utils.getLong()).thenReturn(1L, 2L);
-        Mockito.when(utils.getString()).thenReturn("customer");
-        Mockito.when(orderDao.read(1L)).thenReturn(testOrder);
-        Mockito.when(customerDAO.read(2L)).thenThrow(new CustomerNotFoundException());
+        when(this.utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getString()).thenReturn("customer");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(customerDAO.read(2L)).thenThrow(new CustomerNotFoundException());
 
         assertEquals(testOrder, controller.update());
 
-        Mockito.verify(this.utils, Mockito.times(2)).getLong();
-        Mockito.verify(utils, Mockito.times(1)).getString();
-        Mockito.verify(orderDao, Mockito.times(1)).read(1L);
-        Mockito.verify(customerDAO, Mockito.times(1)).read(2L);
+        verify(this.utils, times(2)).getLong();
+        verify(utils, times(1)).getString();
+        verify(orderDao, times(1)).read(1L);
+        verify(customerDAO, times(1)).read(2L);
     }
 
     @Test
@@ -176,40 +177,40 @@ public class OrderControllerTest {
         Order updatedOrder = new Order(1L, testCust, (Map<Item, Integer>) testItems.clone());
         updatedOrder.addItem(testItem1, 2);
 
-        Mockito.when(utils.getLong()).thenReturn(1L, 1L);
-        Mockito.when(utils.getString()).thenReturn("add");
-        Mockito.when(utils.getInt()).thenReturn(2);
+        when(utils.getLong()).thenReturn(1L, 1L);
+        when(utils.getString()).thenReturn("add");
+        when(utils.getInt()).thenReturn(2);
 
-        Mockito.when(orderDao.read(1L)).thenReturn(testOrder);
-        Mockito.when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
-        Mockito.when(itemDAO.read(1L)).thenReturn(testItem1);
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
+        when(itemDAO.read(1L)).thenReturn(testItem1);
 
         assertEquals(updatedOrder, controller.update());
 
-        Mockito.verify(utils, Mockito.times(2)).getLong();
-        Mockito.verify(utils, Mockito.times(1)).getString();
-        Mockito.verify(utils, Mockito.times(1)).getInt();
-        Mockito.verify(orderDao, Mockito.times(1)).read(1L);
-        Mockito.verify(orderDao, Mockito.times(1)).update(updatedOrder);
-        Mockito.verify(itemDAO, Mockito.times(1)).read(1L);
+        verify(utils, times(2)).getLong();
+        verify(utils, times(1)).getString();
+        verify(utils, times(1)).getInt();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(updatedOrder);
+        verify(itemDAO, times(1)).read(1L);
     }
 
     @Test
     public void updateAddItemNotExistsTest() {
         testOrder = new Order(1L, testCust, testItems);
 
-        Mockito.when(utils.getLong()).thenReturn(1L, 2L);
-        Mockito.when(utils.getString()).thenReturn("add");
+        when(utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getString()).thenReturn("add");
 
-        Mockito.when(orderDao.read(1L)).thenReturn(testOrder);
-        Mockito.when(itemDAO.read(2L)).thenThrow(new ItemNotFoundException());
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(itemDAO.read(2L)).thenThrow(new ItemNotFoundException());
 
         assertEquals(testOrder, controller.update());
 
-        Mockito.verify(utils, Mockito.times(1)).getLong();
-        Mockito.verify(utils, Mockito.times(1)).getString();
-        Mockito.verify(orderDao, Mockito.times(1)).read(1L);
-        Mockito.verify(itemDAO, Mockito.times(1)).read(2L);
+        verify(utils, times(1)).getLong();
+        verify(utils, times(1)).getString();
+        verify(orderDao, times(1)).read(1L);
+        verify(itemDAO, times(1)).read(2L);
     }
 
     @Test
@@ -228,13 +229,13 @@ public class OrderControllerTest {
     public void testDelete() {
         final long ID = 1L;
 
-        Mockito.when(utils.getLong()).thenReturn(ID);
-        Mockito.when(orderDao.delete(ID)).thenReturn(1);
+        when(utils.getLong()).thenReturn(ID);
+        when(orderDao.delete(ID)).thenReturn(1);
 
         assertEquals(1L, this.controller.delete());
 
-        Mockito.verify(utils, Mockito.times(1)).getLong();
-        Mockito.verify(orderDao, Mockito.times(1)).delete(ID);
+        verify(utils, times(1)).getLong();
+        verify(orderDao, times(1)).delete(ID);
 
     }
 }
