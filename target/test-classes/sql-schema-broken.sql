@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS `order_link`;
+DROP TABLE IF EXISTS `order`;
+DROP TABLE IF EXISTS `item`;
+DROP TABLE IF EXISTS `customers`;

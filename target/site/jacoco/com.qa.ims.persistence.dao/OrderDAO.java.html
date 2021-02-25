@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.persistence.dao</a> &gt; <span class="el_source">OrderDAO.java</span></div><h1>OrderDAO.java</h1><pre class="source lang-java linenums">package com.qa.ims.persistence.dao;
+
+import com.qa.ims.exceptions.OrderNotFoundException;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.persistence.domain.Order;
+import com.qa.ims.utils.DBUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+<span class="fc" id="L22">public class OrderDAO implements Dao&lt;Order&gt; {</span>
+<span class="fc" id="L23">    public static final Logger LOGGER = LogManager.getLogger();</span>
+<span class="fc" id="L24">    private final ItemDAO itemDAO = new ItemDAO();</span>
+<span class="fc" id="L25">    private final CustomerDAO customerDAO = new CustomerDAO();</span>
+
+    @Override
+    public List&lt;Order&gt; readAll() {
+<span class="fc" id="L29">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L30">             Statement statement = connection.createStatement();</span>
+<span class="fc" id="L31">             ResultSet resultSet = statement.executeQuery(&quot;SELECT * FROM `order` ORDER BY idorder&quot;)) {</span>
+<span class="fc" id="L32">            List&lt;Order&gt; orders = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">            while (resultSet.next()) {</span>
+<span class="fc" id="L34">                orders.add(modelFromResultSet(resultSet));</span>
+            }
+<span class="fc" id="L36">            return orders;</span>
+<span class="fc" id="L37">        } catch (SQLException e) {</span>
+<span class="fc" id="L38">            LOGGER.debug(e);</span>
+<span class="fc" id="L39">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L41">        return new ArrayList&lt;&gt;();</span>
+    }
+
+    @Override
+    public Order read(Long id) throws OrderNotFoundException {
+<span class="fc" id="L46">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L47">             PreparedStatement statement = connection.prepareStatement(&quot;SELECT * FROM `order` WHERE idorder = ?&quot;)) {</span>
+<span class="fc" id="L48">            statement.setLong(1, id);</span>
+<span class="fc" id="L49">            try (ResultSet rs = statement.executeQuery()) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">                if (!rs.next()) {</span>
+<span class="fc" id="L51">                    throw new OrderNotFoundException();</span>
+                }
+<span class="fc" id="L53">                return modelFromResultSet(rs);</span>
+            }
+<span class="fc" id="L55">        } catch (SQLException e) {</span>
+<span class="fc" id="L56">            LOGGER.debug(e);</span>
+<span class="fc" id="L57">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L59">        return null;</span>
+    }
+
+    @Override
+    public Order create(Order order) {
+        try {
+<span class="fc" id="L65">            Connection connection = DBUtils.getInstance().getConnection();</span>
+
+<span class="fc" id="L67">            connection.setAutoCommit(false);</span>
+
+            // get index of the next order to insert. needed for orderlink creation se we cant rely on the
+            // tables auto increment
+<span class="fc" id="L71">            ResultSet rs = connection.createStatement().executeQuery(&quot;SELECT MAX(idorder) FROM `order`&quot;);</span>
+<span class="fc" id="L72">            rs.next();</span>
+<span class="fc" id="L73">            int index = rs.getInt(&quot;MAX(idorder)&quot;) + 1;</span>
+
+            //create order in order table
+<span class="fc" id="L76">            PreparedStatement statement = connection.prepareStatement(</span>
+                    &quot;INSERT INTO `order`(idorder, custid) VALUES (?,?)&quot;);
+<span class="fc" id="L78">            statement.setLong(1, index);</span>
+<span class="fc" id="L79">            statement.setLong(2, order.getCustomer().getId());</span>
+
+<span class="fc" id="L81">            statement.execute();</span>
+
+            //create orderLink in order_link table for each attached item(if any)
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            for (Item item : order.getItems().keySet()) {</span>
+<span class="fc" id="L85">                statement = connection.prepareStatement(</span>
+                        &quot;INSERT INTO `order_link`(orderid,itemid,quantity) VALUES (?,?,?)&quot;);
+<span class="fc" id="L87">                statement.setLong(1, index);</span>
+<span class="fc" id="L88">                statement.setLong(2, item.getId());</span>
+<span class="fc" id="L89">                statement.setInt(3, order.getItems().get(item));</span>
+<span class="fc" id="L90">                statement.execute();</span>
+<span class="fc" id="L91">            }</span>
+
+<span class="fc" id="L93">            connection.commit();</span>
+<span class="fc" id="L94">            connection.close();</span>
+<span class="fc" id="L95">            return readLatest();</span>
+
+<span class="fc" id="L97">        } catch (SQLException throwables) {</span>
+<span class="fc" id="L98">            LOGGER.debug(throwables);</span>
+<span class="fc" id="L99">            LOGGER.error(throwables.getMessage());</span>
+        }
+<span class="fc" id="L101">        return null;</span>
+    }
+
+    @Override
+    public Order update(Order order) {
+        try {
+            try {
+<span class="fc" id="L108">                Order currentOrder = read(order.getId());</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">                if (currentOrder == null) {</span>
+<span class="fc" id="L111">                    throw new SQLException();</span>
+                }
+
+<span class="fc" id="L114">                Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L115">                connection.setAutoCommit(false);</span>
+                PreparedStatement statement;
+
+                // Customer updated -&gt; update in order table;
+<span class="fc bfc" id="L119" title="All 2 branches covered.">                if (!currentOrder.getCustomer().equals(order.getCustomer())) {</span>
+<span class="fc" id="L120">                    statement = connection.prepareStatement(</span>
+                            &quot;UPDATE `order` SET custid = ? WHERE idorder = ?&quot;);
+<span class="fc" id="L122">                    statement.setLong(1, order.getCustomer().getId());</span>
+<span class="fc" id="L123">                    statement.setLong(2, order.getId());</span>
+<span class="fc" id="L124">                    statement.executeUpdate();</span>
+                }
+
+                // Check for change in orders item
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">                if (!currentOrder.getItems().equals(order.getItems())) {</span>
+<span class="fc" id="L129">                    Set&lt;Item&gt; currentItems = currentOrder.getItems().keySet();</span>
+<span class="fc" id="L130">                    Set&lt;Item&gt; updatedItems = order.getItems().keySet();</span>
+
+
+<span class="fc" id="L133">                    Set&lt;Item&gt; newItems = new HashSet&lt;&gt;(updatedItems);</span>
+<span class="fc" id="L134">                    newItems.removeAll(currentItems);</span>
+
+<span class="fc" id="L136">                    Set&lt;Item&gt; itemsToRemove = new HashSet&lt;&gt;(currentItems);</span>
+<span class="fc" id="L137">                    itemsToRemove.removeAll(updatedItems);</span>
+
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                    for (Item newItem : newItems) {</span>
+<span class="fc" id="L140">                        statement = connection.prepareStatement(</span>
+                                &quot;INSERT INTO `order_link`(orderid, itemid, quantity) VALUES (?,?,?)&quot;);
+<span class="fc" id="L142">                        statement.setLong(1, order.getId());</span>
+<span class="fc" id="L143">                        statement.setLong(2, newItem.getId());</span>
+<span class="fc" id="L144">                        statement.setInt(3, order.getItems().get(newItem));</span>
+<span class="fc" id="L145">                        statement.execute();</span>
+<span class="fc" id="L146">                    }</span>
+
+
+                    //Check for extra item in current items -&gt; remove extra item from order_link table
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                    for (Item extraItem : itemsToRemove) {</span>
+<span class="fc" id="L151">                        statement = connection.prepareStatement(&quot;DELETE FROM `order_link` WHERE orderid = ? and itemid = ?&quot;);</span>
+<span class="fc" id="L152">                        statement.setLong(1, order.getId());</span>
+<span class="fc" id="L153">                        statement.setLong(2, extraItem.getId());</span>
+<span class="fc" id="L154">                        statement.execute();</span>
+<span class="fc" id="L155">                    }</span>
+
+                    //Check for item quantity change -&gt; update quantity in order_link
+<span class="fc bfc" id="L158" title="All 2 branches covered.">                    for (Item item : updatedItems) {</span>
+<span class="fc" id="L159">                        int oldVal = currentOrder.getItems().getOrDefault(item, 0);</span>
+<span class="fc" id="L160">                        int newVal = order.getItems().get(item);</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">                        if (oldVal != newVal) {</span>
+<span class="fc" id="L162">                            statement = connection.prepareStatement(</span>
+                                    &quot;UPDATE `order_link` SET quantity = ? WHERE orderid = ? AND itemid = ?&quot;);
+<span class="fc" id="L164">                            statement.setInt(1, newVal);</span>
+<span class="fc" id="L165">                            statement.setLong(2, order.getId());</span>
+<span class="fc" id="L166">                            statement.setLong(3, item.getId());</span>
+<span class="fc" id="L167">                            statement.execute();</span>
+                        }
+<span class="fc" id="L169">                    }</span>
+                }
+
+<span class="fc" id="L172">                connection.commit();</span>
+<span class="fc" id="L173">                connection.close();</span>
+
+<span class="fc" id="L175">                return read(order.getId());</span>
+<span class="fc" id="L176">            } catch (OrderNotFoundException e) {</span>
+<span class="fc" id="L177">                LOGGER.info(&quot;Order with id &quot; + order.getId() + &quot; cant be found in table&quot;);</span>
+<span class="fc" id="L178">                return null;</span>
+            }
+<span class="fc" id="L180">        } catch (SQLException e) {</span>
+<span class="fc" id="L181">            LOGGER.debug(e);</span>
+<span class="fc" id="L182">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L184">        return null;</span>
+    }
+
+    @Override
+    public int delete(long id) {
+<span class="fc" id="L189">        try (Connection connection = DBUtils.getInstance().getConnection()) {</span>
+<span class="fc" id="L190">            PreparedStatement statement = connection.prepareStatement(&quot;DELETE FROM `order` WHERE idorder = ?&quot;);</span>
+<span class="fc" id="L191">            statement.setLong(1, id);</span>
+<span class="fc" id="L192">            int toReturn = statement.executeUpdate();</span>
+<span class="fc" id="L193">            statement = connection.prepareStatement(&quot;DELETE FROM order_link WHERE orderid = ?&quot;);</span>
+<span class="fc" id="L194">            statement.setLong(1, id);</span>
+<span class="fc" id="L195">            return statement.executeUpdate() + toReturn;</span>
+<span class="fc" id="L196">        } catch (SQLException e) {</span>
+<span class="fc" id="L197">            LOGGER.debug(e);</span>
+<span class="fc" id="L198">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L200">        return 0;</span>
+    }
+
+    @Override
+    public Order modelFromResultSet(ResultSet rs) throws SQLException {
+<span class="fc" id="L205">        Long id = rs.getLong(&quot;idorder&quot;);</span>
+<span class="fc" id="L206">        Long custId = rs.getLong(&quot;custid&quot;);</span>
+
+<span class="fc" id="L208">        return new Order(id, customerDAO.read(custId), readItemsFromOrder(id));</span>
+    }
+
+    public Map&lt;Item, Integer&gt; readItemsFromOrder(Long orderId) {
+<span class="fc" id="L212">        Map&lt;Item, Integer&gt; items = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L213">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L214">             Statement statement = connection.createStatement();</span>
+<span class="fc" id="L215">             ResultSet rs = statement.executeQuery(&quot;SELECT * FROM `order_link` WHERE orderid = &quot; + orderId)) {</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">            while (rs.next()) {</span>
+<span class="fc" id="L217">                items.put(itemDAO.read(rs.getLong(&quot;itemid&quot;)), rs.getInt(&quot;quantity&quot;));</span>
+            }
+<span class="fc" id="L219">            return items;</span>
+<span class="nc" id="L220">        } catch (SQLException e) {</span>
+<span class="nc" id="L221">            LOGGER.debug(e);</span>
+<span class="nc" id="L222">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="nc" id="L224">        return null;</span>
+    }
+
+    public Order readLatest() {
+<span class="fc" id="L228">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L229">             Statement statement = connection.createStatement();</span>
+<span class="fc" id="L230">             ResultSet resultSet = statement.executeQuery(&quot;SELECT * FROM `order` ORDER BY idorder DESC LIMIT 1&quot;)) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">            if (resultSet.next()) {</span>
+<span class="fc" id="L232">                return modelFromResultSet(resultSet);</span>
+<span class="fc" id="L233">            } else throw new OrderNotFoundException();</span>
+<span class="fc" id="L234">        } catch (SQLException e) {</span>
+<span class="fc" id="L235">            LOGGER.debug(e);</span>
+<span class="fc" id="L236">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L238">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

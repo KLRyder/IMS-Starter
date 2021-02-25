@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.persistence.dao</a> &gt; <span class="el_source">ItemDAO.java</span></div><h1>ItemDAO.java</h1><pre class="source lang-java linenums">package com.qa.ims.persistence.dao;
+
+import com.qa.ims.exceptions.ItemNotFoundException;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.utils.DBUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="fc" id="L17">public class ItemDAO implements Dao&lt;Item&gt; {</span>
+<span class="fc" id="L18">    public static final Logger LOGGER = LogManager.getLogger();</span>
+
+    @Override
+    public List&lt;Item&gt; readAll() {
+<span class="fc" id="L22">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L23">             Statement statement = connection.createStatement();</span>
+<span class="fc" id="L24">             ResultSet resultSet = statement.executeQuery(&quot;SELECT * FROM item&quot;)) {</span>
+<span class="fc" id="L25">            List&lt;Item&gt; items = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">            while (resultSet.next()) {</span>
+<span class="fc" id="L27">                items.add(modelFromResultSet(resultSet));</span>
+            }
+<span class="fc" id="L29">            return items;</span>
+<span class="fc" id="L30">        } catch (SQLException e) {</span>
+<span class="fc" id="L31">            LOGGER.debug(e);</span>
+<span class="fc" id="L32">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L34">        return new ArrayList&lt;&gt;();</span>
+    }
+
+    @Override
+    public Item read(Long id) throws ItemNotFoundException{
+<span class="fc" id="L39">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L40">             PreparedStatement statement = connection.prepareStatement(&quot;SELECT * FROM item WHERE iditem = ?&quot;)) {</span>
+<span class="fc" id="L41">            statement.setLong(1, id);</span>
+<span class="fc" id="L42">            try (ResultSet rs = statement.executeQuery()) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">                if(!rs.next()){</span>
+<span class="fc" id="L44">                    throw new ItemNotFoundException();</span>
+                }
+<span class="fc" id="L46">                return modelFromResultSet(rs);</span>
+            }
+<span class="fc" id="L48">        } catch (SQLException e) {</span>
+<span class="fc" id="L49">            LOGGER.debug(e);</span>
+<span class="fc" id="L50">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L52">        return null;</span>
+    }
+
+    @Override
+    public Item create(Item item) {
+<span class="fc" id="L57">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L58">             PreparedStatement statement = connection</span>
+<span class="fc" id="L59">                     .prepareStatement(&quot;INSERT INTO item(name, price) VALUES (?, ?)&quot;)) {</span>
+<span class="fc" id="L60">            statement.setString(1, item.getName());</span>
+<span class="fc" id="L61">            statement.setDouble(2, item.getPrice());</span>
+<span class="fc" id="L62">            statement.executeUpdate();</span>
+<span class="fc" id="L63">            return readLatest();</span>
+<span class="fc" id="L64">        } catch (SQLException e) {</span>
+<span class="fc" id="L65">            LOGGER.debug(e);</span>
+<span class="fc" id="L66">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L68">        return null;</span>
+    }
+
+    @Override
+    public Item update(Item item) throws ItemNotFoundException{
+<span class="fc" id="L73">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L74">             PreparedStatement statement = connection</span>
+<span class="fc" id="L75">                     .prepareStatement(&quot;UPDATE item SET name = ?, price = ? WHERE iditem = ?&quot;)) {</span>
+<span class="fc" id="L76">            statement.setString(1, item.getName());</span>
+<span class="fc" id="L77">            statement.setDouble(2, item.getPrice());</span>
+<span class="fc" id="L78">            statement.setLong(3, item.getId());</span>
+<span class="fc" id="L79">            statement.executeUpdate();</span>
+<span class="fc" id="L80">            return read(item.getId());</span>
+<span class="fc" id="L81">        } catch (SQLException e) {</span>
+<span class="fc" id="L82">            LOGGER.debug(e);</span>
+<span class="fc" id="L83">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L85">        return null;</span>
+    }
+
+    @Override
+    public int delete(long id) {
+<span class="fc" id="L90">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L91">             PreparedStatement statement = connection.prepareStatement(&quot;DELETE FROM item WHERE iditem = ?&quot;)) {</span>
+<span class="fc" id="L92">            statement.setLong(1, id);</span>
+<span class="fc" id="L93">            return statement.executeUpdate();</span>
+<span class="fc" id="L94">        } catch (SQLException e) {</span>
+<span class="fc" id="L95">            LOGGER.debug(e);</span>
+<span class="fc" id="L96">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L98">        return 0;</span>
+    }
+
+    @Override
+    public Item modelFromResultSet(ResultSet rs) throws SQLException {
+<span class="fc" id="L103">        Long id = rs.getLong(&quot;iditem&quot;);</span>
+<span class="fc" id="L104">        String name = rs.getString(&quot;name&quot;);</span>
+<span class="fc" id="L105">        double price = rs.getDouble(&quot;price&quot;);</span>
+<span class="fc" id="L106">        return new Item(id, name, price);</span>
+    }
+
+    //TODO: code duplication with CustomerDAO here. find better solution in final pass time allowing
+    public Item readLatest() {
+<span class="fc" id="L111">        try (Connection connection = DBUtils.getInstance().getConnection();</span>
+<span class="fc" id="L112">             Statement statement = connection.createStatement();</span>
+<span class="fc" id="L113">             ResultSet resultSet = statement.executeQuery(&quot;SELECT * FROM item ORDER BY iditem DESC LIMIT 1&quot;)) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (resultSet.next()){</span>
+<span class="fc" id="L115">                return modelFromResultSet(resultSet);</span>
+            }
+<span class="fc" id="L117">            else throw new ItemNotFoundException();</span>
+<span class="fc" id="L118">        } catch (SQLException e) {</span>
+<span class="fc" id="L119">            LOGGER.debug(e);</span>
+<span class="fc" id="L120">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L122">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
