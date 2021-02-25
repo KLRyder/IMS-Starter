@@ -1,5 +1,6 @@
 package com.qa.ims.persistence.dao;
 
+import com.qa.ims.exceptions.OrderNotFoundException;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Order;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OrderDAOTest {
     private final OrderDAO DAO = new OrderDAO();
@@ -55,6 +56,12 @@ public class OrderDAOTest {
     }
 
     @Test
+    public void testReadLatestNotFound() {
+        DAO.delete(1);
+        assertThrows(OrderNotFoundException.class, DAO::readLatest);
+    }
+
+    @Test
     public void testRead() {
         final long ID = 1L;
         final Item item = new Item(ID, "test_item", 22.22);
@@ -62,6 +69,12 @@ public class OrderDAOTest {
         items.put(item, 1);
         final Customer customer = new Customer(1L, "jordan", "harrison");
         assertEquals(new Order(ID, customer, items), DAO.read(ID));
+    }
+
+    @Test
+    public void testReadNotFound() {
+        final long ID = 9999L;
+        assertThrows(OrderNotFoundException.class, () -> DAO.read(ID));
     }
 
     @Test
@@ -73,6 +86,24 @@ public class OrderDAOTest {
         items.put(item2, 2);
         final Order updated = new Order(1L, new Customer(2L, "bob", "bobson"), items);
         assertEquals(updated, DAO.update(updated));
+    }
+
+    @Test
+    public void testUpdateRemoveItem() {
+        Item item1 = new Item(2L, "item", 22.26);
+        final HashMap<Item, Integer> items = new HashMap<>();
+        items.put(item1, 1);
+        final Order updated = new Order(1L, new Customer(1L, "jordan", "harrison"), items);
+        assertEquals(updated, DAO.update(updated));
+    }
+
+    @Test
+    public void testUpdateNotFound() {
+        Item item1 = new Item(2L, "item", 22.26);
+        final HashMap<Item, Integer> items = new HashMap<>();
+        items.put(item1, 1);
+        final Order updated = new Order(42352345L, new Customer(1L, "jordan", "harrison"), items);
+        assertNull(DAO.update(updated));
     }
 
     @Test

@@ -224,8 +224,10 @@ public class OrderDAO implements Dao<Order> {
         try (Connection connection = DBUtils.getInstance().getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM `order` ORDER BY idorder DESC LIMIT 1")) {
-            resultSet.next();
-            return modelFromResultSet(resultSet);
+            if (resultSet.next()){
+                return modelFromResultSet(resultSet);
+            }
+            else throw new OrderNotFoundException();
         } catch (SQLException e) {
             LOGGER.debug(e);
             LOGGER.error(e.getMessage());
