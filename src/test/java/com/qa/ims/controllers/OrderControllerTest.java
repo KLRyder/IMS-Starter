@@ -66,10 +66,13 @@ public class OrderControllerTest {
 
         Mockito.when(utils.getLong()).thenReturn(1L);
         Mockito.when(orderDao.create(testOrder)).thenReturn(testOrder);
+        Mockito.when(customerDAO.read(1L)).thenReturn(testCust);
 
         assertEquals(testOrder, controller.create());
 
         Mockito.verify(utils, Mockito.times(1)).getLong();
+        Mockito.verify(orderDao, Mockito.times(1)).create(testOrder);
+        Mockito.verify(customerDAO, Mockito.times(1)).read(1L);
     }
 
     @Test
