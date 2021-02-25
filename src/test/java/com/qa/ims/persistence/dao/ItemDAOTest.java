@@ -1,5 +1,6 @@
 package com.qa.ims.persistence.dao;
 
+import com.qa.ims.exceptions.ItemNotFoundException;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ItemDAOTest {
     private final ItemDAO DAO = new ItemDAO();
@@ -39,9 +40,22 @@ public class ItemDAOTest {
     }
 
     @Test
+    public void testReadLatestNoItems() {
+        DAO.delete(2);
+        DAO.delete(1);
+        assertThrows(ItemNotFoundException.class, DAO::readLatest);
+    }
+
+    @Test
     public void testRead() {
         final long ID = 1L;
         assertEquals(new Item(ID, "test_item", 22.22), DAO.read(ID));
+    }
+
+    @Test
+    public void testReadNotExists() {
+        final long ID = 1111111L;
+        assertThrows(ItemNotFoundException.class, () -> DAO.read(ID));
     }
 
     @Test

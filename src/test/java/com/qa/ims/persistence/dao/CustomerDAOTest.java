@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import com.qa.ims.exceptions.CustomerNotFoundException;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.DBUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CustomerDAOTest {
 
@@ -42,9 +44,23 @@ public class CustomerDAOTest {
     }
 
     @Test
+    public void testReadLatestNoItems() {
+        DAO.delete(2);
+        DAO.delete(1);
+        assertThrows(CustomerNotFoundException.class, DAO::readLatest);
+    }
+
+
+    @Test
     public void testRead() {
         final long ID = 1L;
         assertEquals(new Customer(ID, "jordan", "harrison"), DAO.read(ID));
+    }
+
+    @Test
+    public void testReadNotExists() {
+        final long ID = 1111111L;
+        assertThrows(CustomerNotFoundException.class, () -> DAO.read(ID));
     }
 
     @Test
