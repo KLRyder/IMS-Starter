@@ -171,6 +171,27 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void updateAddItemNegativeTest() {
+        testOrder = new Order(1L, testCust, testItems);
+
+        when(utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getString()).thenReturn("add","done");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(itemDAO.read(2L)).thenReturn(testItem2);
+        when(orderDao.update(testOrder)).thenReturn(testOrder);
+        when(utils.getInt()).thenReturn(-2);
+
+        assertEquals(testOrder, controller.update());
+
+        verify(utils, times(2)).getLong();
+        verify(utils, times(2)).getString();
+        verify(utils, times(1)).getInt();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(testOrder);
+        verify(itemDAO, times(1)).read(2L);
+    }
+
+    @Test
     public void updateAddItemNotExistsTest() {
         testOrder = new Order(1L, testCust, testItems);
 
