@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -102,29 +101,6 @@ public class OrderControllerTest {
     }
 
     @Test
-    public void testUpdateAddItem() {
-        testOrder = new Order(1L, testCust, testItems);
-        Order expectedOrder = new Order(1L, testCust, (Map<Item, Integer>) testItems.clone());
-        expectedOrder.addItem(testItem1 , 2);
-
-        when(this.utils.getLong()).thenReturn(1L, 1L);
-        when(utils.getString()).thenReturn("add");
-        when(utils.getInt()).thenReturn(2);
-
-        when(orderDao.read(1L)).thenReturn(testOrder);
-        when(orderDao.update(expectedOrder)).thenReturn(expectedOrder);
-        when(itemDAO.read(1L)).thenReturn(testItem1);
-
-        assertEquals(expectedOrder, controller.update());
-
-        verify(this.utils, times(2)).getLong();
-        verify(this.utils, times(1)).getString();
-        verify(this.utils, times(1)).getInt();
-        verify(this.orderDao, times(1)).update(expectedOrder);
-
-    }
-
-    @Test
     public void updateOrderNotExistsTest() {
         when(this.utils.getLong()).thenReturn(1L);
         when(orderDao.read(1L)).thenThrow(new OrderNotFoundException());
@@ -141,7 +117,7 @@ public class OrderControllerTest {
         Order updatedOrder = new Order(1L, newCust, testItems);
 
         when(this.utils.getLong()).thenReturn(1L, 2L);
-        when(utils.getString()).thenReturn("customer");
+        when(utils.getString()).thenReturn("customer","done");
         when(orderDao.read(1L)).thenReturn(testOrder);
         when(customerDAO.read(2L)).thenReturn(newCust);
         when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
@@ -149,10 +125,10 @@ public class OrderControllerTest {
         assertEquals(updatedOrder, controller.update());
 
         verify(utils, times(2)).getLong();
-        verify(utils, times(1)).getString();
+        verify(utils, times(2)).getString();
         verify(orderDao, times(1)).read(1L);
         verify(orderDao, times(1)).update(updatedOrder);
-        verify(customerDAO, times(1)).read(1L);
+        verify(customerDAO, times(1)).read(2L);
     }
 
     @Test
