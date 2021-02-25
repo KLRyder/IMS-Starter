@@ -1,7 +1,7 @@
-Coverage: 34%
-# Project Title
+Coverage: 82%
+# Inventory Management System
 
-One Paragraph of project description goes here
+A fairly simple MVC styled Java command line application, modeling a simple order system system. Tracks items, customers and orders from those customers for items.
 
 ## Getting Started
 
