@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="2" failures="0" name="com.qa.ims.persistence.domain.CustomerTest" time="0.21" errors="0" skipped="0">
+<testsuite tests="2" failures="0" name="com.qa.ims.persistence.domain.CustomerTest" time="0.223" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="java.vm.version" value="14.0.2+12-46"/>
@@ -61,5 +61,5 @@
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
   <testcase classname="com.qa.ims.persistence.domain.CustomerTest" name="testCompare" time="0"/>
-  <testcase classname="com.qa.ims.persistence.domain.CustomerTest" name="testEquals" time="0.21"/>
+  <testcase classname="com.qa.ims.persistence.domain.CustomerTest" name="testEquals" time="0.223"/>
 </testsuite>

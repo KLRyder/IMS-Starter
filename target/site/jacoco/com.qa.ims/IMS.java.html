@@ -67,43 +67,44 @@ public class IMS {
 <span class="nc" id="L67">                    return;</span>
                 case INIT:
 <span class="nc" id="L69">                    DBUtils.connect().init(&quot;classes/sql-schema.sql&quot;);</span>
+<span class="nc" id="L70">                    LOGGER.info(&quot;New tables created.&quot;);</span>
                 default:
                     break;
             }
 
-<span class="nc" id="L74">            LOGGER.info(() -&gt; &quot;What would you like to do with &quot; + domain.name().toLowerCase() + &quot;:&quot;);</span>
+<span class="nc" id="L75">            LOGGER.info(() -&gt; &quot;What would you like to do with &quot; + domain.name().toLowerCase() + &quot;:&quot;);</span>
 
-<span class="nc" id="L76">            Action.printActions();</span>
-<span class="nc" id="L77">            Action action = Action.getAction(utils);</span>
+<span class="nc" id="L77">            Action.printActions();</span>
+<span class="nc" id="L78">            Action action = Action.getAction(utils);</span>
 
-<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (action == Action.RETURN) {</span>
-<span class="nc" id="L80">                changeDomain = true;</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (action == Action.RETURN) {</span>
+<span class="nc" id="L81">                changeDomain = true;</span>
             } else {
-<span class="nc" id="L82">                doAction(active, action);</span>
+<span class="nc" id="L83">                doAction(active, action);</span>
             }
-<span class="nc bnc" id="L84" title="All 2 branches missed.">        } while (!changeDomain);</span>
-<span class="nc" id="L85">    }</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        } while (!changeDomain);</span>
+<span class="nc" id="L86">    }</span>
 
     public void doAction(CrudController&lt;?&gt; crudController, Action action) {
-<span class="nc bnc" id="L88" title="All 6 branches missed.">        switch (action) {</span>
+<span class="nc bnc" id="L89" title="All 6 branches missed.">        switch (action) {</span>
             case CREATE:
-<span class="nc" id="L90">                crudController.create();</span>
-<span class="nc" id="L91">                break;</span>
+<span class="nc" id="L91">                crudController.create();</span>
+<span class="nc" id="L92">                break;</span>
             case READ:
-<span class="nc" id="L93">                crudController.readAll();</span>
-<span class="nc" id="L94">                break;</span>
+<span class="nc" id="L94">                crudController.readAll();</span>
+<span class="nc" id="L95">                break;</span>
             case UPDATE:
-<span class="nc" id="L96">                crudController.update();</span>
-<span class="nc" id="L97">                break;</span>
+<span class="nc" id="L97">                crudController.update();</span>
+<span class="nc" id="L98">                break;</span>
             case DELETE:
-<span class="nc" id="L99">                crudController.delete();</span>
-<span class="nc" id="L100">                break;</span>
+<span class="nc" id="L100">                crudController.delete();</span>
+<span class="nc" id="L101">                break;</span>
             case RETURN:
-<span class="nc" id="L102">                break;</span>
+<span class="nc" id="L103">                break;</span>
             default:
                 break;
         }
-<span class="nc" id="L106">    }</span>
+<span class="nc" id="L107">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
