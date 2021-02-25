@@ -191,13 +191,37 @@ public class OrderControllerTest {
     @Test
     public void updateRemoveItemTest() {
         testOrder = new Order(1L, testCust, testItems);
+        Order updatedOrder = new Order(1L, testCust, new HashMap<>(testItems));
+        updatedOrder.removeItem(testItem1);
 
-        
+        when(utils.getLong()).thenReturn(1L, 1L);
+        when(utils.getString()).thenReturn("remove","done");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(orderDao.update(updatedOrder)).thenReturn(updatedOrder);
+
+        assertEquals(updatedOrder, controller.update());
+
+        verify(utils, times(2)).getLong();
+        verify(utils, times(2)).getString();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(updatedOrder);
     }
 
     @Test
     public void updateRemoveItemNotInOrderTest() {
+        testOrder = new Order(1L, testCust, testItems);
 
+        when(utils.getLong()).thenReturn(1L, 2L);
+        when(utils.getString()).thenReturn("remove","done");
+        when(orderDao.read(1L)).thenReturn(testOrder);
+        when(orderDao.update(testOrder)).thenReturn(testOrder);
+
+        assertEquals(testOrder, controller.update());
+
+        verify(utils, times(2)).getLong();
+        verify(utils, times(2)).getString();
+        verify(orderDao, times(1)).read(1L);
+        verify(orderDao, times(1)).update(testOrder);
     }
 
     @Test
