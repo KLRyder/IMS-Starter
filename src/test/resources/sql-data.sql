@@ -1,4 +1,4 @@
-INSERT INTO `customers` (`first_name`, `surname`)
+INSERT INTO customers (`first_name`, `surname`)
 VALUES ('jordan', 'harrison');
 
 INSERT INTO `customers` (`first_name`, `surname`)
@@ -10,8 +10,8 @@ VALUES ('test_item', 22.22);
 INSERT INTO `item` (`name`, `price`)
 VALUES ('item', 22.26);
 
-INSERT INTO `ims`.`order` (`custid`)
+INSERT INTO `order` (`custid`)
 values (1);
 
-INSERT INTO `ims`.`order_link` (`orderid`, itemid, quantity)
+INSERT INTO `order_link` (`orderid`, itemid, quantity)
 values (1, 1, 1);

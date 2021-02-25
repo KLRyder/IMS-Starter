@@ -25,8 +25,7 @@ CREATE TABLE IF NOT EXISTS `ims`.`order`
     `idorder` int NOT NULL AUTO_INCREMENT,
     `custid`  int NOT NULL,
     PRIMARY KEY (`idorder`),
-    KEY `custid_idx` (`custid`),
-    CONSTRAINT `custid` FOREIGN KEY (`custid`) REFERENCES `ims`.`customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (`custid`) REFERENCES `ims`.`customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `ims`.`order_link`
@@ -36,8 +35,6 @@ CREATE TABLE IF NOT EXISTS `ims`.`order_link`
     `itemid`       int NOT NULL,
     `quantity`     int NOT NULL,
     PRIMARY KEY (`idorder_link`),
-    KEY `orderid_idx` (`orderid`),
-    KEY `itemid_idx` (`itemid`),
-    CONSTRAINT `itemid` FOREIGN KEY (`itemid`) REFERENCES `ims`.`item` (`iditem`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `orderid` FOREIGN KEY (`orderid`) REFERENCES `ims`.`order` (`idorder`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (`itemid`) REFERENCES `ims`.`item` (`iditem`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`orderid`) REFERENCES `ims`.`order` (`idorder`) ON DELETE CASCADE ON UPDATE CASCADE
 );

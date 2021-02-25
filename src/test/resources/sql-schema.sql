@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS `order_link`;
+DROP TABLE IF EXISTS `order`;
+DROP TABLE IF EXISTS `item`;
 DROP TABLE IF EXISTS `customers`;
 
 CREATE TABLE IF NOT EXISTS `customers`
@@ -7,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `customers`
     `surname`    VARCHAR(40) DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
-DROP TABLE IF EXISTS `item`;
+
 
 CREATE TABLE IF NOT EXISTS `item`
 (
@@ -17,18 +20,13 @@ CREATE TABLE IF NOT EXISTS `item`
     PRIMARY KEY (`iditem`)
 );
 
-DROP TABLE IF EXISTS `order`;
-
 CREATE TABLE `order`
 (
     `idorder` int NOT NULL AUTO_INCREMENT,
     `custid`  int NOT NULL,
     PRIMARY KEY (`idorder`),
-    KEY `custid_idx` (`custid`),
-    CONSTRAINT `custid` FOREIGN KEY (`custid`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (`custid`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-DROP TABLE IF EXISTS `order_link`;
 
 CREATE TABLE `order_link`
 (
@@ -37,8 +35,6 @@ CREATE TABLE `order_link`
     `itemid`       int NOT NULL,
     `quantity`     int NOT NULL,
     PRIMARY KEY (`idorder_link`),
-    KEY `orderid_idx` (`orderid`),
-    KEY `itemid_idx` (`itemid`),
-    CONSTRAINT `itemid` FOREIGN KEY (`itemid`) REFERENCES `item` (`iditem`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `orderid` FOREIGN KEY (`orderid`) REFERENCES `order` (`idorder`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (`itemid`) REFERENCES `item` (`iditem`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`orderid`) REFERENCES `order` (`idorder`) ON DELETE CASCADE ON UPDATE CASCADE
 );
