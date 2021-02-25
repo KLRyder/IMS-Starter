@@ -110,4 +110,43 @@ public class OrderDAOTest {
     public void testDelete() {
         assertEquals(1, DAO.delete(1));
     }
+
+
+
+    //Tests for incorrectly setup database
+    @Test
+    public void readAllBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertEquals(new ArrayList<Order>(), DAO.readAll());
+    }
+
+    @Test
+    public void readLatestBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.readLatest());
+    }
+
+    @Test
+    public void createBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.create(new Order(1L, new Customer("",""),new HashMap<>())));
+    }
+
+    @Test
+    public void readBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.read(1L));
+    }
+
+    @Test
+    public void updateBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.update(new Order(1L, new Customer("",""),new HashMap<>())));
+    }
+
+    @Test
+    public void deleteBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertEquals(0,DAO.delete(1));
+    }
 }

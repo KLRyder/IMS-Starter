@@ -11,8 +11,7 @@ import com.qa.ims.utils.DBUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomerDAOTest {
 
@@ -73,5 +72,43 @@ public class CustomerDAOTest {
     @Test
     public void testDelete() {
         assertEquals(1, DAO.delete(1));
+    }
+
+
+    //Tests for incorrectly setup database
+    @Test
+    public void readAllBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertEquals(new ArrayList<Customer>(), DAO.readAll());
+    }
+
+    @Test
+    public void readLatestBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.readLatest());
+    }
+
+    @Test
+    public void createBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.create(new Customer("test","test")));
+    }
+
+    @Test
+    public void readBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.read(1L));
+    }
+
+    @Test
+    public void updateBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertNull(DAO.update(new Customer(1L, "dasdas","adsads")));
+    }
+
+    @Test
+    public void deleteBrokenDBTest(){
+        DBUtils.getInstance().init("src/test/resources/sql-schema-broken.sql");
+        assertEquals(0,DAO.delete(1));
     }
 }
