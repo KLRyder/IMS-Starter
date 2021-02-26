@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.controller</a> &gt; <span class="el_source">OrderController.java</span></div><h1>OrderController.java</h1><pre class="source lang-java linenums">package com.qa.ims.controller;
+
+import com.qa.ims.exceptions.CustomerNotFoundException;
+import com.qa.ims.exceptions.ItemNotFoundException;
+import com.qa.ims.exceptions.OrderNotFoundException;
+import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.dao.OrderDAO;
+import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.persistence.domain.Order;
+import com.qa.ims.utils.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.List;
+
+public class OrderController implements CrudController&lt;Order&gt; {
+
+<span class="fc" id="L21">    public static final Logger LOGGER = LogManager.getLogger();</span>
+
+    private final CustomerDAO customerDAO;
+    private final OrderDAO orderDAO;
+    private final ItemDAO itemDAO;
+    private final Utils utils;
+
+<span class="fc" id="L28">    public OrderController(CustomerDAO customerDAO, OrderDAO orderDAO, ItemDAO itemDAO, Utils utils) {</span>
+<span class="fc" id="L29">        this.customerDAO = customerDAO;</span>
+<span class="fc" id="L30">        this.itemDAO = itemDAO;</span>
+<span class="fc" id="L31">        this.orderDAO = orderDAO;</span>
+<span class="fc" id="L32">        this.utils = utils;</span>
+<span class="fc" id="L33">    }</span>
+
+    @Override
+    public List&lt;Order&gt; readAll() {
+<span class="fc" id="L37">        List&lt;Order&gt; orders = orderDAO.readAll();</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (Order o : orders) {</span>
+<span class="fc" id="L39">            LOGGER.info(o);</span>
+<span class="fc" id="L40">        }</span>
+<span class="fc" id="L41">        return orders;</span>
+    }
+
+    @Override
+    public Order create() {
+<span class="fc" id="L46">        LOGGER.info(&quot;Please enter the id of the customer you wish to create a new order for&quot;);</span>
+<span class="fc" id="L47">        Long custid = utils.getLong();</span>
+        Customer c;
+        try {
+<span class="fc" id="L50">            c = customerDAO.read(custid);</span>
+<span class="fc" id="L51">            Order order = orderDAO.create(new Order(c, new HashMap&lt;&gt;()));</span>
+<span class="fc" id="L52">            LOGGER.info(&quot;Order created&quot;);</span>
+<span class="fc" id="L53">            return order;</span>
+<span class="fc" id="L54">        } catch (CustomerNotFoundException e) {</span>
+<span class="fc" id="L55">            LOGGER.info(&quot;Customer with id &quot; + custid + &quot; not found&quot;);</span>
+<span class="fc" id="L56">            return null;</span>
+        }
+    }
+
+    @Override
+    public Order update() {
+<span class="fc" id="L62">        LOGGER.info(&quot;Please enter the id of the order that you would like to update&quot;);</span>
+<span class="fc" id="L63">        Long id = utils.getLong();</span>
+        try {
+<span class="fc" id="L65">            Order orderToUpdate = orderDAO.read(id);</span>
+            UpdateOrderAction action;
+            do {
+<span class="fc" id="L68">                LOGGER.info(&quot;Order is currently as follows: \n&quot; + orderToUpdate);</span>
+<span class="fc" id="L69">                LOGGER.info(&quot;What would you like to do with this order?&quot;);</span>
+<span class="fc" id="L70">                UpdateOrderAction.printActions();</span>
+
+
+<span class="fc" id="L73">                action = UpdateOrderAction.getAction(utils);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                if (action == UpdateOrderAction.CANCEL){</span>
+<span class="fc" id="L75">                    LOGGER.info(&quot;Update cancelled&quot;);</span>
+<span class="fc" id="L76">                    return null;</span>
+                }
+<span class="fc" id="L78">                updateOrder(action, orderToUpdate);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            } while (action != UpdateOrderAction.DONE);</span>
+<span class="fc" id="L80">            return orderDAO.update(orderToUpdate);</span>
+<span class="fc" id="L81">        } catch (OrderNotFoundException e) {</span>
+<span class="fc" id="L82">            LOGGER.info(&quot;No order with ID &quot; + id + &quot; can be found. Please try again.&quot;);</span>
+        }
+<span class="fc" id="L84">        return null;</span>
+    }
+
+    private void updateOrder(UpdateOrderAction action, Order orderToUpdate) {
+        Long id;
+<span class="pc bpc" id="L89" title="1 of 6 branches missed.">        switch (action) {</span>
+            case ADD:
+<span class="fc" id="L91">                LOGGER.info(&quot;Enter the ID of the item you wish to add&quot;);</span>
+<span class="fc" id="L92">                id = utils.getLong();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">                if (orderToUpdate.containsItem(id)) {</span>
+<span class="fc" id="L94">                    LOGGER.info(&quot;Order already contains an item with ID &quot; + id +</span>
+                            &quot;. Did you mean to change the QUANTITY instead?&quot;);
+<span class="fc" id="L96">                    break;</span>
+                }
+                try {
+<span class="fc" id="L99">                    Item toAdd = itemDAO.read(id);</span>
+<span class="fc" id="L100">                    LOGGER.info(&quot;How many units of &quot; + toAdd.getName() + &quot; do you wish to add?&quot;);</span>
+<span class="fc" id="L101">                    int quant = utils.getInt();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">                    if (quant &lt; 1) {</span>
+<span class="fc" id="L103">                        LOGGER.info(&quot;You need to add at least one item. If you wish to remove items try using REMOVE.&quot;);</span>
+<span class="fc" id="L104">                        break;</span>
+                    }
+<span class="fc" id="L106">                    orderToUpdate.addItem(toAdd, quant);</span>
+<span class="fc" id="L107">                } catch (ItemNotFoundException e) {</span>
+<span class="fc" id="L108">                    LOGGER.info(&quot;No item with ID &quot; + id + &quot; can be found. Please try again.&quot;);</span>
+<span class="fc" id="L109">                }</span>
+<span class="fc" id="L110">                break;</span>
+
+            case REMOVE:
+<span class="fc" id="L113">                LOGGER.info(&quot;Enter the ID of the item you wish to remove:&quot;);</span>
+<span class="fc" id="L114">                id = utils.getLong();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">                if (!orderToUpdate.removeItem(id)) {</span>
+<span class="fc" id="L116">                    LOGGER.info(&quot;Order does not contain an item with ID &quot; + id +</span>
+                            &quot;. Did you mean to ADD an item instead?&quot;);
+                }
+                break;
+
+            case QUANTITY:
+<span class="fc" id="L122">                LOGGER.info(&quot;Enter the ID of the item whose quantity you wish to change:&quot;);</span>
+<span class="fc" id="L123">                id = utils.getLong();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">                if (!orderToUpdate.containsItem(id)) {</span>
+<span class="fc" id="L125">                    LOGGER.info(&quot;No item with ID &quot; + id + &quot; can be found. Did you mean to ADD the item instead?&quot;);</span>
+<span class="fc" id="L126">                    break;</span>
+                }
+<span class="fc" id="L128">                LOGGER.info(&quot;Order currently has &quot; + orderToUpdate.getItemQuantity(id) +</span>
+                        &quot; of item ID &quot; + id + &quot;.\nHow enter new quantity:&quot;);
+<span class="fc" id="L130">                int quant = utils.getInt();</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                if (quant &lt; 1) {</span>
+<span class="fc" id="L132">                    LOGGER.info(&quot;Orders cannot contain less than one of an item. Removing item instead&quot;);</span>
+<span class="fc" id="L133">                    orderToUpdate.removeItem(id);</span>
+                }
+<span class="fc" id="L135">                orderToUpdate.setItemQuantity(id, quant);</span>
+<span class="fc" id="L136">                break;</span>
+
+            case CUSTOMER:
+<span class="fc" id="L139">                LOGGER.info(&quot;Enter the ID of the customer you wish to change to:&quot;);</span>
+<span class="fc" id="L140">                id = utils.getLong();</span>
+                try {
+<span class="fc" id="L142">                    orderToUpdate.setCustomer(customerDAO.read(id));</span>
+<span class="fc" id="L143">                    break;</span>
+<span class="fc" id="L144">                } catch (CustomerNotFoundException e) {</span>
+<span class="fc" id="L145">                    LOGGER.info(&quot;No customer with ID &quot; + id + &quot; can be found. Please try again.&quot;);</span>
+                }
+<span class="fc" id="L147">                break;</span>
+
+            case DONE:
+<span class="fc" id="L150">                LOGGER.info(&quot;Updating order...&quot;);</span>
+                break;
+        }
+<span class="fc" id="L153">    }</span>
+
+    //TODO make the user confirm that they wish to delete the order. Potently read order to confirm first?
+    @Override
+    public int delete() {
+<span class="fc" id="L158">        LOGGER.info(&quot;Please enter the id  of the order you want to delete&quot;);</span>
+<span class="fc" id="L159">        Long id = utils.getLong();</span>
+<span class="fc" id="L160">        return orderDAO.delete(id);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

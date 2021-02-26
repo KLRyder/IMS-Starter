@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="18" failures="0" name="com.qa.ims.controllers.OrderControllerTest" time="0.176" errors="0" skipped="0">
+<testsuite tests="18" failures="0" name="com.qa.ims.controllers.OrderControllerTest" time="1.047" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="java.vm.version" value="14.0.2+12-46"/>
@@ -60,22 +60,22 @@
     <property name="sun.stdout.encoding" value="cp850"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateRemoveItemTest" time="0.034"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateOrderNotExistsTest" time="0.002"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateMistypeTest" time="0.014"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemTest" time="0.014"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateRemoveItemTest" time="0.106"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateOrderNotExistsTest" time="0.003"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateMistypeTest" time="0.104"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemTest" time="0.165"/>
   <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="testCreateInvalidCustomer" time="0.002"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateQuantityNegativeTest" time="0.015"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemNotExistsTest" time="0.011"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateCustomerTest" time="0.016"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateQuantityTest" time="0.006"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemNegativeTest" time="0.012"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateQuantityItemNotInOrderTest" time="0.011"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemAlreadyExistsTest" time="0.008"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateCancelTest" time="0.007"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="testReadAll" time="0.003"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateRemoveItemNotInOrderTest" time="0.011"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="testCreate" time="0"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="testDelete" time="0.002"/>
-  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateCustomerNotExistsTest" time="0.008"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateQuantityNegativeTest" time="0.188"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemNotExistsTest" time="0.122"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateCustomerTest" time="0.049"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateQuantityTest" time="0.059"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemNegativeTest" time="0.03"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateQuantityItemNotInOrderTest" time="0.056"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateAddItemAlreadyExistsTest" time="0.058"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateCancelTest" time="0.034"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="testReadAll" time="0.006"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateRemoveItemNotInOrderTest" time="0.028"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="testCreate" time="0.004"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="testDelete" time="0.001"/>
+  <testcase classname="com.qa.ims.controllers.OrderControllerTest" name="updateCustomerNotExistsTest" time="0.032"/>
 </testsuite>

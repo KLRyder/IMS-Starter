@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.controller</a> &gt; <span class="el_source">ItemController.java</span></div><h1>ItemController.java</h1><pre class="source lang-java linenums">package com.qa.ims.controller;
+
+import com.qa.ims.exceptions.ItemNotFoundException;
+import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.utils.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
+
+public class ItemController implements CrudController&lt;Item&gt; {
+
+
+<span class="fc" id="L15">    public static final Logger LOGGER = LogManager.getLogger();</span>
+
+    private ItemDAO itemDAO;
+    private Utils utils;
+
+    public ItemController(ItemDAO itemDAO, Utils utils) {
+<span class="fc" id="L21">        super();</span>
+<span class="fc" id="L22">        this.itemDAO = itemDAO;</span>
+<span class="fc" id="L23">        this.utils = utils;</span>
+<span class="fc" id="L24">    }</span>
+
+    @Override
+    public List&lt;Item&gt; readAll() {
+<span class="fc" id="L28">        List&lt;Item&gt; items = itemDAO.readAll();</span>
+        for (Item i :
+<span class="fc bfc" id="L30" title="All 2 branches covered.">                items) {</span>
+<span class="fc" id="L31">            LOGGER.info(i);</span>
+<span class="fc" id="L32">        }</span>
+<span class="fc" id="L33">        return items;</span>
+    }
+
+    @Override
+    public Item create() {
+<span class="fc" id="L38">        LOGGER.info(&quot;Please enter an item name&quot;);</span>
+<span class="fc" id="L39">        String name = utils.getString();</span>
+<span class="fc" id="L40">        LOGGER.info(&quot;Please enter the price for &quot; + name);</span>
+<span class="fc" id="L41">        double price = utils.getDouble();</span>
+<span class="fc" id="L42">        Item item = itemDAO.create(new Item(name, price));</span>
+<span class="fc" id="L43">        LOGGER.info(&quot;item created&quot;);</span>
+<span class="fc" id="L44">        return item;</span>
+    }
+
+    //TODO change single values rather than whole item. Potentially read item and ask what to update?
+    @Override
+    public Item update() {
+<span class="fc" id="L50">        LOGGER.info(&quot;Please enter the id of the item you would like to update&quot;);</span>
+<span class="fc" id="L51">        Long id = utils.getLong();</span>
+<span class="fc" id="L52">        LOGGER.info(&quot;Please enter a new name&quot;);</span>
+<span class="fc" id="L53">        String name = utils.getString();</span>
+<span class="fc" id="L54">        LOGGER.info(&quot;Please enter a new price&quot;);</span>
+<span class="fc" id="L55">        double price = utils.getDouble();</span>
+<span class="fc" id="L56">        Item item = null;</span>
+        try {
+<span class="fc" id="L58">            item = itemDAO.update(new Item(id, name, price));</span>
+<span class="fc" id="L59">            LOGGER.info(&quot;Item Updated&quot;);</span>
+<span class="fc" id="L60">        } catch (ItemNotFoundException e) {</span>
+<span class="fc" id="L61">            LOGGER.info(&quot;Item with ID &quot; + id + &quot; not found.&quot;);</span>
+<span class="fc" id="L62">        }</span>
+
+<span class="fc" id="L64">        return item;</span>
+    }
+
+    //TODO make the user confirm that they wish to delete the item. Potently read item to confirm first?
+    @Override
+    public int delete() {
+<span class="fc" id="L70">        LOGGER.info(&quot;Please enter the id  of the item you want to delete&quot;);</span>
+<span class="fc" id="L71">        Long id = utils.getLong();</span>
+<span class="fc" id="L72">        return itemDAO.delete(id);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
